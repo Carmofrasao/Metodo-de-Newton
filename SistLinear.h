@@ -26,7 +26,7 @@ typedef struct {
   int max_iter;     //numero maximo de iterações
   double *r;        //vetor de resultados finais
   double tempo;     //tempo de execucao
-  double ap;        //aproximação inicial
+  double *ap;        //aproximação inicial
 
 } SistLinear_t;
 

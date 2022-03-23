@@ -29,13 +29,16 @@ int main (){
   while (SL->eq != NULL)
   {
     //leitura das variáveis a partir de um arquivo 
+    printf("chegou aqui");
 
+    SL->ap = (double*) calloc(SL->n, sizeof(double));
     clean_fgets(SL->eq);
     f = evaluator_create(SL->eq);
     assert(f);
     SL->f[i] = f;
 
-    scanf("%le", &(SL->ap));
+    for(int m = 0; m < SL->n; m++)
+      scanf("%le", &SL->ap[m]);
     scanf("%le", &(SL->epsilon));
     scanf("%i", &(SL->max_iter));
 
