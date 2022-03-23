@@ -75,7 +75,7 @@ void triangLU(SistLinear_t *SL) {
       if (isnan(m))
         printf("ERRO: %g\n", SL->A[i][i]);
       SL->U[k][i] = 0.0;
-      SL->L[k][i] = m;
+      SL->L[k][i] *= m;
 
       if (k-1 == i)
         SL->L[k-1][i] = 1;
