@@ -22,18 +22,18 @@ int main (){
 
   scanf("%d", &(SL->n));
 
-  SL->eq = (char*) calloc(SL->n, sizeof(char)); 
+  char *eq = (char*) calloc(SL->n, sizeof(char)); 
   
-  scanf("%s", SL->eq);
+  scanf("%s", eq);
 
-  while (SL->eq != NULL)
+  while (eq != NULL)
   {
     //leitura das variáveis a partir de um arquivo 
     printf("chegou aqui");
 
     SL->ap = (double*) calloc(SL->n, sizeof(double));
-    clean_fgets(SL->eq);
-    f = evaluator_create(SL->eq);
+    clean_fgets(eq);
+    f = evaluator_create(eq);
     assert(f);
     SL->f[i] = f;
 
@@ -79,15 +79,15 @@ int main (){
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    free(X);
-    liberaSistLinear(SL);
     ++i;
-
+    free(X);
     fscanf(stdin, "%d", &(SL->n)); 
 
-    SL->eq = (char*) calloc(SL->n, sizeof(char));
+    eq = (char*) calloc(SL->n, sizeof(char));
   
-    fscanf(stdin, "%s", SL->eq);
+    fscanf(stdin, "%s", eq);
   }
+  
+  liberaSistLinear(SL);
   evaluator_destroy(f);
 }

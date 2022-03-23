@@ -20,7 +20,7 @@ typedef struct {
   double **U;       // matriz dos multiplicadores (UPER)
   double *z;        // vetor z para Fatoração LU
 
-  char *eq;        //strings com equacao auxiliar pra montagem da matriz
+  //char *eq;        //strings com equacao auxiliar pra montagem da matriz
   void **f;       //matriz de strings com as expressoes
   double epsilon;   //tolerancia no metodo de gauss seidel
   int max_iter;     //numero maximo de iterações

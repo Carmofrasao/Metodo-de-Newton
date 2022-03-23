@@ -120,8 +120,6 @@ void Newton_Inexato(SistLinear_t *e){
   }
   free(matriz);
 
-  free(e->eq);
-
   free(e->r);
 
   free(e->b);
