@@ -20,6 +20,8 @@ int main (){
   
   while (SL = lerSistLinear())
   {
+
+    //criando matriz hessiana
     clean_fgets(SL->eq_aux);
     
     char aux[4];
@@ -46,6 +48,8 @@ int main (){
         SL->HESSIANA[n][l] = f_aux;
       }
     }
+
+    //criando vetor gradiente
     for(int l = 0; l < SL->num_v; l++)
     {
       memset(Xn, 0, sizeof(Xn));
@@ -58,6 +62,7 @@ int main (){
       assert(f_aux);
       SL->GRADIENTE[l] = f_aux;
     }
+    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /*
     // Metodo de Newton Padrao
