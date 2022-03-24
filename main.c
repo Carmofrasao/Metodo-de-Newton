@@ -20,18 +20,18 @@ int main (){
   
   while (SL = lerSistLinear())
   {
-    clean_fgets(SL->eq);
+    clean_fgets(SL->eq_aux);
     
     char aux[4];
     char buffer[4];
     
-    for(int n = 0; n < SL->n; n++)
+    for(int n = 0; n < SL->num_v; n++)
     {
-      for(int l = 0; l < SL->n; l++)
+      for(int l = 0; l < SL->num_v; l++)
       {
         memset(buffer, 0, sizeof(buffer));
         memset(aux, 0, sizeof(aux));
-        f = evaluator_create(SL->eq);
+        f = evaluator_create(SL->eq_aux);
         assert(f);
         sprintf(aux, "%d", n);
         strcat(strcpy(buffer, "x"), aux); 
@@ -43,7 +43,7 @@ int main (){
         strcat(strcpy(buffer, "x"), aux); 
         f = evaluator_derivative (f, buffer);
         assert(f);
-        SL->f[n][l] = f;
+        SL->HESSIANA[n][l] = f;
       }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

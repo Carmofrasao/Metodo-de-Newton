@@ -9,26 +9,26 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
   SistLinear_t *SL = (SistLinear_t *) malloc(sizeof(SistLinear_t));
 
   if (SL) {
-    SL->n = n;
+    SL->num_v = n;
 
-    SL->f = (void***) calloc(n, sizeof(void**));
-    if (!(SL->f)) {
+    SL->HESSIANA = (void***) calloc(n, sizeof(void**));
+    if (!(SL->HESSIANA)) {
       free(SL);
       return NULL;
     }
     for (int i = 0; i < n; i++)
     {
-      SL->f[i] = (void**) calloc(n, sizeof(void*));
+      SL->HESSIANA[i] = (void**) calloc(n, sizeof(void*));
     }
 
-    SL->ap = (double*) calloc(n, sizeof(double)); 
-    if (!(SL->ap)) {
+    SL->aprox = (double*) calloc(n, sizeof(double)); 
+    if (!(SL->aprox)) {
       free(SL);
       return NULL;
     }
 
-    SL->eq = (char*) calloc(1024, sizeof(char));
-    if (!(SL->eq)) {
+    SL->eq_aux = (char*) calloc(1024, sizeof(char));
+    if (!(SL->eq_aux)) {
       free(SL);
       return NULL;
     }
@@ -87,8 +87,8 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
       return NULL;
     }
   
-    SL->r = (double*) calloc(n, sizeof(double));
-    if (!(SL->r)) {
+    SL->X = (double*) calloc(n, sizeof(double));
+    if (!(SL->X)) {
       free(SL);
       return NULL;
     }
@@ -98,22 +98,22 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
 }
 
 void liberaSistLinear(SistLinear_t *SL) {
-  for(int i = 0; i < SL->n; i++)
+  for(int i = 0; i < SL->num_v; i++)
   {
     free(SL->L[i]);
   }
   free(SL->L);
-  for(int i = 0; i < SL->n; i++)
+  for(int i = 0; i < SL->num_v; i++)
   {
     free(SL->U[i]);
   }
   free(SL->U);
   free(SL->z);
-  free(SL->r);
+  free(SL->X);
   free(SL->b);
   free(SL->M);
   free(SL->A);
-  for(int i = 0; i < SL->n; i++)
+  for(int i = 0; i < SL->num_v; i++)
   {
     free(SL->A[i]);
   }
@@ -121,11 +121,11 @@ void liberaSistLinear(SistLinear_t *SL) {
 }
 
 SistLinear_t *dupSL(SistLinear_t *SL) {
-  SistLinear_t *dup = alocaSistLinear(SL->n);
+  SistLinear_t *dup = alocaSistLinear(SL->num_v);
 
   if (dup) {
-    for(int i = 0; i < SL->n; ++i) {
-      for(int j = 0; j < SL->n; ++j)
+    for(int i = 0; i < SL->num_v; ++i) {
+      for(int j = 0; j < SL->num_v; ++j)
         dup->A[i][j] = SL->A[i][j];
       dup->b[i] = SL->b[i];
     }
@@ -143,11 +143,11 @@ SistLinear_t *lerSistLinear() {
   if (scanf("%d",&n) != EOF) {  
     
     SL = alocaSistLinear(n);
-    scanf("%s", SL->eq);
+    scanf("%s", SL->eq_aux);
   
-    for (int l = 0; l < SL->n; l++)
+    for (int l = 0; l < SL->num_v; l++)
     {
-      scanf("%le", &(SL->ap[l]));
+      scanf("%le", &(SL->aprox[l]));
     }
     
     scanf("%le", &(SL->epsilon));

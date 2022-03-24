@@ -11,7 +11,7 @@
   http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:alocacao_dinamica_de_matrizes&s[]=aloca%C3%A7%C3%A3o&s[]=de&s[]=matrizes
 */
 typedef struct {
-  unsigned int n;   // numero de variaveis
+  unsigned int num_v;   // numero de variaveis
   double *M;        // vetor nxn de posições da matriz
   double **A;       // matriz dos coeficientes do SL (vetor de ponteiros para posições de M)
   double *b;        // termos independentes do SL
@@ -20,13 +20,13 @@ typedef struct {
   double **U;       // matriz dos multiplicadores (UPER)
   double *z;        // vetor z para Fatoração LU
 
-  char *eq;        //strings com equacao auxiliar pra montagem da matriz
-  void ***f;       //matriz de strings com as expressoes
+  char *eq_aux;        //strings com equacao auxiliar pra montagem da matriz
+  void ***HESSIANA;       //matriz de strings com as expressoes
   double epsilon;   //tolerancia no metodo de gauss seidel
   int max_iter;     //numero maximo de iterações
-  double *r;        //vetor de resultados finais
+  double *X;        //vetor de resultados finais
   double tempo;     //tempo de execucao
-  double* ap;        //aproximação inicial
+  double* aprox;        //aproximação inicial
 
 } SistLinear_t;
 

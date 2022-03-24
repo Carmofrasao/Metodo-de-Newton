@@ -8,7 +8,7 @@
 void pivot(SistLinear_t *SL, int i) {
   double max = fabs(SL->A[i][i]);
   int max_i = i;
-  for (int j = i+1; j < SL->n; ++j) {
+  for (int j = i+1; j < SL->num_v; ++j) {
     double v = fabs(SL->A[j][i]);
     if (v > max) {
       max = v;
@@ -27,24 +27,24 @@ void pivot(SistLinear_t *SL, int i) {
 } 
 
 void retrossubs(SistLinear_t *SL, double *X) {
-  for (int i = SL->n-1; i >=0; --i) {
+  for (int i = SL->num_v-1; i >=0; --i) {
     X[i] = SL->b[i];
-    for (int j = i+1; j < SL->n; j++)
+    for (int j = i+1; j < SL->num_v; j++)
       X[i] -= SL->A[i][j] * X[j];
     X[i] /= SL->A[i][i];
   }
 }
 
 void triang(SistLinear_t *SL) {
-  for (int i = 0; i < SL->n; ++i) {
+  for (int i = 0; i < SL->num_v; ++i) {
     pivot(SL, i);
-    for (int k = i+1; k < SL->n; ++k) {
+    for (int k = i+1; k < SL->num_v; ++k) {
       double m = SL->A[k][i] / SL->A[i][i];
       if (isnan(m))
         printf("ERRO: %g\n", SL->A[i][i]);
       SL->A[k][i] = 0.0;
 
-      for (int j = i+1; j < SL->n; ++j)
+      for (int j = i+1; j < SL->num_v; ++j)
         SL->A[k][j] -= SL->A[i][j] * m;
       SL->b[k] -= SL->b[i] * m;
     }

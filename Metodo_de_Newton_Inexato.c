@@ -20,13 +20,13 @@ void clean_fgets(char *pos) {
 // Gauss-Seidel 
 void gaussSeidel(SistLinear_t *e, double **matriz) {
   int i,j,q;
-  unsigned int n = e->n;
-  double *r =  malloc((e->n) * sizeof (double)) ;
+  unsigned int n = e->num_v;
+  double *r =  malloc((e->num_v) * sizeof (double)) ;
   double temp,sum,erroMaximo,erroCalculado;
   double **A = matriz;
   double *b = e->b;
-  double *x = malloc((e->n) * sizeof(double));
-  e->r = malloc((e->n) * sizeof(double));
+  double *x = malloc((e->num_v) * sizeof(double));
+  e->X = malloc((e->num_v) * sizeof(double));
 
   // A[n][n] = Matriz principal (e->f)
   // b[n] = vetor_independente (e->termos_independentes)
@@ -59,16 +59,16 @@ void gaussSeidel(SistLinear_t *e, double **matriz) {
     x[i] = r[i];
   }
 
-  e->r = x; //copiar dados para estrutura
+  e->X = x; //copiar dados para estrutura
 
   free(r);
 }
 
 void calcula_independentes(SistLinear_t *e, double **matrix_diag){
 
-  double *indep = (double *) malloc((e->n) * sizeof(double));
-  for(int i = 0; i < (e->n); i++){
-    indep[i] = matrix_diag[e->n - 1][i];
+  double *indep = (double *) malloc((e->num_v) * sizeof(double));
+  for(int i = 0; i < (e->num_v); i++){
+    indep[i] = matrix_diag[e->num_v - 1][i];
   }
   e->b = indep;
 
@@ -89,25 +89,25 @@ void Newton_Inexato(SistLinear_t *e){
 
   // usar libmatheval para gerar vetores com os valor de 0 até n para cada equação
   int i, j, k;
-  double **matriz, linha[e->n], func;
+  double **matriz, linha[e->num_v], func;
 
-  for(int i = 0; i < e->n; i++)
+  for(int i = 0; i < e->num_v; i++)
   {
     linha[i] = 0.0;
   }
 
-  matriz = malloc ((e->n) * sizeof (double*)); //aloca espaco para matrix_diag com valores da diagonal 
-  for (i=0; i < (e->n); i++){
-    matriz[i] = malloc ((e->n) * sizeof (double));
+  matriz = malloc ((e->num_v) * sizeof (double*)); //aloca espaco para matrix_diag com valores da diagonal 
+  for (i=0; i < (e->num_v); i++){
+    matriz[i] = malloc ((e->num_v) * sizeof (double));
   }
 
-  for(i=0; i < e->n ; i++){
-    for(j=0; j<e->n; j++){
-      func = evaluator_evaluate_x(e->f, j);
+  for(i=0; i < e->num_v ; i++){
+    for(j=0; j<e->num_v; j++){
+      func = evaluator_evaluate_x(e->HESSIANA, j);
       linha[j] = func;
     }
 
-    for(k=0; k<e->n; k++){
+    for(k=0; k<e->num_v; k++){
       matriz[i][k] = linha[k];
     }
   }
@@ -115,12 +115,12 @@ void Newton_Inexato(SistLinear_t *e){
   calcula_independentes(e, matriz); //Calcula termos independentes
   calcula_tempo(e, matriz); //calcula tempo de execucao
   
-  for (i=0; i < (e->n); i++){
+  for (i=0; i < (e->num_v); i++){
     free(matriz[i]);
   }
   free(matriz);
 
-  free(e->r);
+  free(e->X);
 
   free(e->b);
 } 
