@@ -16,35 +16,47 @@ int main (){
   SistLinear_t *SL;
   
   int i = 0;
-  void *f;
+  void *f_aux;
   
   while (SL = lerSistLinear())
   {
     clean_fgets(SL->eq_aux);
     
     char aux[4];
-    char buffer[4];
+    char Xn[4];
     
     for(int n = 0; n < SL->num_v; n++)
     {
       for(int l = 0; l < SL->num_v; l++)
       {
-        memset(buffer, 0, sizeof(buffer));
+        memset(Xn, 0, sizeof(Xn));
         memset(aux, 0, sizeof(aux));
-        f = evaluator_create(SL->eq_aux);
-        assert(f);
+        f_aux = evaluator_create(SL->eq_aux);
+        assert(f_aux);
         sprintf(aux, "%d", n);
-        strcat(strcpy(buffer, "x"), aux); 
-        f = evaluator_derivative (f, buffer);
-        assert(f);
-        memset(buffer, 0, sizeof(buffer));
+        strcat(strcpy(Xn, "x"), aux); 
+        f_aux = evaluator_derivative (f_aux, Xn);
+        assert(f_aux);
+        memset(Xn, 0, sizeof(Xn));
         memset(aux, 0, sizeof(aux));
         sprintf(aux, "%d", l);
-        strcat(strcpy(buffer, "x"), aux); 
-        f = evaluator_derivative (f, buffer);
-        assert(f);
-        SL->HESSIANA[n][l] = f;
+        strcat(strcpy(Xn, "x"), aux); 
+        f_aux = evaluator_derivative (f_aux, Xn);
+        assert(f_aux);
+        SL->HESSIANA[n][l] = f_aux;
       }
+    }
+    for(int l = 0; l < SL->num_v; l++)
+    {
+      memset(Xn, 0, sizeof(Xn));
+      memset(aux, 0, sizeof(aux));
+      f_aux = evaluator_create(SL->eq_aux);
+      assert(f_aux);
+      sprintf(aux, "%d", l);
+      strcat(strcpy(Xn, "x"), aux); 
+      f_aux = evaluator_derivative (f_aux, Xn);
+      assert(f_aux);
+      SL->GRADIENTE[l] = f_aux;
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /*
@@ -85,5 +97,5 @@ int main (){
     ++i;
   }
   //liberaSistLinear(SL);
-  evaluator_destroy(f);
+  evaluator_destroy(f_aux);
 }

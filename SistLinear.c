@@ -11,6 +11,12 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
   if (SL) {
     SL->num_v = n;
 
+    SL->GRADIENTE = (void**) calloc(n, sizeof(void*));
+    if (!(SL->GRADIENTE)) {
+      free(SL);
+      return NULL;
+    }
+
     SL->HESSIANA = (void***) calloc(n, sizeof(void**));
     if (!(SL->HESSIANA)) {
       free(SL);

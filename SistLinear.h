@@ -22,6 +22,7 @@ typedef struct {
 
   char *eq_aux;        //strings com equacao auxiliar pra montagem da matriz
   void ***HESSIANA;       //matriz de strings com as expressoes
+  void **GRADIENTE; 
   double epsilon;   //tolerancia no metodo de gauss seidel
   int max_iter;     //numero maximo de iterações
   double *X;        //vetor de resultados finais
