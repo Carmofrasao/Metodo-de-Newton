@@ -15,36 +15,34 @@
 int main (){
   SistLinear_t *SL;
   
-  //int i = 0;
-  //void *f;
+  int i = 0;
+  void *f;
   
   while (SL = lerSistLinear())
   {
-    
-    printf("%d %s\n", SL->n, SL->eq);
-    for(int i = 0; i < SL->n; i++)
-    {
-      printf("%f ", SL->ap[i]);
-    }
-    printf("\n%e %d\n\n", SL->epsilon, SL->max_iter);
-    /*
     clean_fgets(SL->eq);
     f = evaluator_create(SL->eq);
     assert(f);
-
-    void * Faux;
     char aux[2];
     for(int n = 0; n < SL->n; n++)
     {
-      char buffer[2];
-      sprintf(aux, "%d", n);
-      strcat(strcpy(buffer, "x"), aux); 
-      Faux = evaluator_derivative (f, buffer);
-      SL->f[i] = Faux;
+      for(int l = 0; l < SL->n; l++)
+      {
+        char buffer[2];
+        sprintf(aux, "%d", l);
+        strcat(strcpy(buffer, "x"), aux); 
+        f = evaluator_derivative (f, buffer);
+        assert(f);
+        sprintf(aux, "%d", n);
+        strcat(strcpy(buffer, "x"), aux); 
+        f = evaluator_derivative (f, buffer);
+        assert(f);
+        SL->f[n][l] = f;
+      }
     }
-
+    printf("rodando %d\n", i);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    /*
     // Metodo de Newton Padrao
     double *X = (double *) malloc(sizeof(double)*SL->n);
 
@@ -78,10 +76,9 @@ int main (){
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    free(X);
+    free(X);*/
     ++i;
-    */
   }
   //liberaSistLinear(SL);
-  //evaluator_destroy(f);
+  evaluator_destroy(f);
 }

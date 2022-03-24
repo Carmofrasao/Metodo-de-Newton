@@ -11,10 +11,14 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
   if (SL) {
     SL->n = n;
 
-    SL->f = (void*) calloc(n, sizeof(void));
+    SL->f = (void***) calloc(n, sizeof(void**));
     if (!(SL->f)) {
       free(SL);
       return NULL;
+    }
+    for (int i = 0; i < n; i++)
+    {
+      SL->f[i] = (void**) calloc(n, sizeof(void*));
     }
 
     SL->ap = (double*) calloc(n, sizeof(double)); 
