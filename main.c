@@ -22,34 +22,30 @@ int main (){
   {
     clean_fgets(SL->eq);
     
-    char aux[2];
-    printf("%d %s\n", SL->n, SL->eq);
-    for(int i = 0; i < SL->n; i++)
-    {
-      printf("%f ", SL->ap[i]);
-    }
-    printf("\n%e %d\n", SL->epsilon, SL->max_iter);
+    char aux[4];
+    char buffer[4];
+    
     for(int n = 0; n < SL->n; n++)
     {
       for(int l = 0; l < SL->n; l++)
       {
+        memset(buffer, 0, sizeof(buffer));
+        memset(aux, 0, sizeof(aux));
         f = evaluator_create(SL->eq);
         assert(f);
-        char buffer[2];
         sprintf(aux, "%d", n);
         strcat(strcpy(buffer, "x"), aux); 
         f = evaluator_derivative (f, buffer);
         assert(f);
-        printf("%s ", buffer);
+        memset(buffer, 0, sizeof(buffer));
+        memset(aux, 0, sizeof(aux));
         sprintf(aux, "%d", l);
         strcat(strcpy(buffer, "x"), aux); 
         f = evaluator_derivative (f, buffer);
         assert(f);
-        printf("%s\n", buffer);
         SL->f[n][l] = f;
       }
     }
-    printf("rodando %d\n\n", i);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /*
     // Metodo de Newton Padrao
