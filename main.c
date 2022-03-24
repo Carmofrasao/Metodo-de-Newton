@@ -21,8 +21,7 @@ int main (){
   while (SL = lerSistLinear())
   {
     clean_fgets(SL->eq);
-    f = evaluator_create(SL->eq);
-    assert(f);
+    
     char aux[2];
     printf("%d %s\n", SL->n, SL->eq);
     for(int i = 0; i < SL->n; i++)
@@ -34,6 +33,8 @@ int main (){
     {
       for(int l = 0; l < SL->n; l++)
       {
+        f = evaluator_create(SL->eq);
+        assert(f);
         char buffer[2];
         sprintf(aux, "%d", n);
         strcat(strcpy(buffer, "x"), aux); 
