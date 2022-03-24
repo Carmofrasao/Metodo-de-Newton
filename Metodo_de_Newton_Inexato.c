@@ -19,7 +19,7 @@ void clean_fgets(char *pos) {
 
 // Gauss-Seidel 
 void gaussSeidel(SistLinear_t *e, double **matriz) {
-  int i,j,q,d;
+  int i,j,q;
   unsigned int n = e->n;
   double *r =  malloc((e->n) * sizeof (double)) ;
   double temp,sum,erroMaximo,erroCalculado;
@@ -88,7 +88,7 @@ void calcula_tempo(SistLinear_t *e, double **matriz){
 void Newton_Inexato(SistLinear_t *e){
 
   // usar libmatheval para gerar vetores com os valor de 0 até n para cada equação
-  int i, j, k, l, row, columns;
+  int i, j, k;
   double **matriz, linha[e->n], func;
 
   for(int i = 0; i < e->n; i++)
@@ -119,8 +119,6 @@ void Newton_Inexato(SistLinear_t *e){
     free(matriz[i]);
   }
   free(matriz);
-
-  free(e->eq);
 
   free(e->r);
 

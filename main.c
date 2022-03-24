@@ -13,31 +13,36 @@
 
 
 int main (){
-
-  SistLinear_t aux;
-
-  SistLinear_t *SL = &aux;
-  int i = 0;
-  void *f;
-
-  scanf("%d", &(SL->n));
-
-  SL->eq = (char*) calloc(SL->n, sizeof(char)); 
+  SistLinear_t *SL;
   
-  scanf("%s", SL->eq);
-
-  while (SL->eq != NULL)
+  //int i = 0;
+  //void *f;
+  
+  while (SL = lerSistLinear())
   {
-    //leitura das variáveis a partir de um arquivo 
+    
+    printf("%d %s\n", SL->n, SL->eq);
+    for(int i = 0; i < SL->n; i++)
+    {
+      printf("%f ", SL->ap[i]);
+    }
+    printf("\n%e %d\n\n", SL->epsilon, SL->max_iter);
 
+    /*
     clean_fgets(SL->eq);
     f = evaluator_create(SL->eq);
     assert(f);
-    SL->f[i] = f;
 
-    scanf("%le", &(SL->ap));
-    scanf("%le", &(SL->epsilon));
-    scanf("%i", &(SL->max_iter));
+    void * Faux;
+    char aux[2];
+    for(int n = 0; n < SL->n; n++)
+    {
+      char buffer[2];
+      sprintf(aux, "%d", n);
+      strcat(strcpy(buffer, "x"), aux); 
+      Faux = evaluator_derivative (f, buffer);
+      SL->f[i] = Faux;
+    }
 
 
     /////////////////////////////////////***************************************************************************************************
@@ -46,7 +51,6 @@ int main (){
     double *X = (double *) malloc(sizeof(double)*SL->n);
 
     printf("\n***** Sistema %d --> n = %d\n", i+1, SL->n);
-    printf("chegou aqui");
     double tTotal = timestamp();
     eliminacaoGauss(SL, X);
     tTotal = timestamp() - tTotal;
@@ -77,14 +81,9 @@ int main (){
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     free(X);
-    liberaSistLinear(SL);
     ++i;
-
-    fscanf(stdin, "%d", &(SL->n)); 
-
-    SL->eq = (char*) calloc(SL->n, sizeof(char));
-  
-    fscanf(stdin, "%s", SL->eq);
+    */
   }
-  evaluator_destroy(f);
+  //liberaSistLinear(SL);
+  //evaluator_destroy(f);
 }
