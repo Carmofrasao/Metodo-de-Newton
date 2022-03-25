@@ -129,7 +129,7 @@ double * Newton_Padrao(SistLinear_t *SL)
 
     double ** m_aux = calc_hes(SL);
 
-    for (int i = 0; i < SL->num_v-1; i++)
+    for (int i = 0; i < SL->num_v; i++)
     {
       if(aux <= SL->X[i])
       {
