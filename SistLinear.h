@@ -19,7 +19,6 @@ typedef struct {
   double epsilon;       //tolerancia no metodo de gauss seidel
   int max_iter;         //numero maximo de iterações
   double *X;            //vetor de resultados finais
-  double tempo;         //tempo de execucao
   double* aprox;        //aproximação inicial
 
 } SistLinear_t;

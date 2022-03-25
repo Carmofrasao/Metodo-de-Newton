@@ -17,17 +17,15 @@ int main (){
   
   int i = 0;
   void *f_aux;
+  char aux[4];
+  char Xn[4];
 
-  double TtotalEG, TtotalLU, TtotalGS, TderivadasEG, TderivadasLU, TderivadasGS, TslEG, TslLU, TslGS;
+  //double TtotalEG, TtotalLU, TtotalGS, TderivadasEG, TderivadasLU, TderivadasGS, TslEG, TslLU, TslGS;
   
   while (SL = lerSistLinear())
   {
-
     //criando matriz hessiana
     clean_fgets(SL->eq_aux);
-    
-    char aux[4];
-    char Xn[4];
     
     for(int n = 0; n < SL->num_v; n++)
     {
@@ -72,7 +70,7 @@ int main (){
     memset(SL->X, 0, sizeof(SL->X));
 
     double tTotal = timestamp();
-    eliminacaoGauss(SL);
+    Newton_Padrao(SL);
     TtotalEG = timestamp() - tTotal;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

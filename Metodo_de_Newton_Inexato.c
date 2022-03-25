@@ -26,7 +26,6 @@ void gaussSeidel(SistLinear_t *e, double **matriz) {
   double **A = matriz;
   double *b = e->b;
   double *x = malloc((e->num_v) * sizeof(double));
-  e->X = malloc((e->num_v) * sizeof(double));
 
   // A[n][n] = Matriz principal (e->f)
   // b[n] = vetor_independente (e->termos_independentes)
@@ -74,17 +73,6 @@ void calcula_independentes(SistLinear_t *e, double **matrix_diag){
 
 }
 
-void calcula_tempo(SistLinear_t *e, double **matriz){
-
-  //calculamos tempo antes de executar o gaussSeidel e depois pra fazermos a diferença de ambos
-  e->tempo=0;
-  e->tempo = timestamp();
-  gaussSeidel(e, matriz);
-  e->tempo = timestamp() - e->tempo;
-
-
-}
-
 void Newton_Inexato(SistLinear_t *e){
 
   // usar libmatheval para gerar vetores com os valor de 0 até n para cada equação
@@ -113,7 +101,7 @@ void Newton_Inexato(SistLinear_t *e){
   }
 
   calcula_independentes(e, matriz); //Calcula termos independentes
-  calcula_tempo(e, matriz); //calcula tempo de execucao
+  gaussSeidel(e, matriz);
   
   for (i=0; i < (e->num_v); i++){
     free(matriz[i]);
