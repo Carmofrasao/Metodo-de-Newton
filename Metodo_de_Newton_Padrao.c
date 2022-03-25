@@ -134,7 +134,7 @@ double ** Newton_Padrao(SistLinear_t *SL)
     double * grad = calc_grad(SL);
     
     double ** m_aux = calc_hes(SL);
-
+  
     for (int i = 0; i < SL->num_v; i++)
     {
       if(aux <= fabs(grad[i]))

@@ -1,5 +1,5 @@
 CFLAGS = -Wall -g 
-LFLAGS = -lmatheval
+LFLAGS = -lmatheval -lm
 
 objs = main.o utils.o SistLinear.o Metodo_de_Newton_Inexato.o Metodo_de_Newton_Modificado.o Metodo_de_Newton_Padrao.o
 

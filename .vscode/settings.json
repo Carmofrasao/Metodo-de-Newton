@@ -2,6 +2,8 @@
     "files.associations": {
         "*.s": "platformio-debug.asm",
         "stdio.h": "c",
-        "sistlinear.h": "c"
+        "sistlinear.h": "c",
+        "stdlib.h": "c",
+        "math.h": "c"
     }
 }
