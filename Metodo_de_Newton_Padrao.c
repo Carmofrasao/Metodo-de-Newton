@@ -125,34 +125,34 @@ double * Newton_Padrao(SistLinear_t *SL)
   {
     double aux = 0.0;
 
-    double * res = calc_grad(SL);
-
+    double * grad = calc_grad(SL);
+    
     double ** m_aux = calc_hes(SL);
 
     for (int i = 0; i < SL->num_v; i++)
     {
-      if(aux <= SL->Xeg[i])
+      if(aux <= fabs(grad[i]))
       {
-        aux = res[i];
+        aux = grad[i];
       }
     }
-    
+
     if(fabs(aux) < SL->epsilon)
       return SL->Xeg;
-    double * delta = (double*) malloc(SL->num_v*sizeof(double));
+    double * delta = (double*) calloc(SL->num_v, sizeof(double));
 
-    delta = eliminacaoGauss(SL, delta, m_aux, res);
+    delta = eliminacaoGauss(SL, delta, m_aux, grad);
 
     for (int l = 0; l < SL->num_v; l++)
     {
-      SL->Xeg[l] = SL->Xeg[l] + delta[l];
+      SL->Xeg[l] += delta[l];
     }
 
     aux = 0.0;
 
     for (int i = 0; i < SL->num_v-1; i++)
     {
-      if(aux <= SL->Xeg[i])
+      if(aux <= delta[i])
       {
         aux = delta[i];
       }
