@@ -26,12 +26,12 @@ void pivot(SistLinear_t *SL, int i) {
   }
 } 
 
-void retrossubs(SistLinear_t *SL, double *X) {
+void retrossubs(SistLinear_t *SL) {
   for (int i = SL->num_v-1; i >=0; --i) {
-    X[i] = SL->b[i];
+    SL->X[i] = SL->b[i];
     for (int j = i+1; j < SL->num_v; j++)
-      X[i] -= SL->A[i][j] * X[j];
-    X[i] /= SL->A[i][i];
+      SL->X[i] -= SL->A[i][j] * SL->X[j];
+    SL->X[i] /= SL->A[i][i];
   }
 }
 
@@ -51,7 +51,7 @@ void triang(SistLinear_t *SL) {
   }
 }
 
-  void eliminacaoGauss(SistLinear_t *SL, double *X) {
+  void eliminacaoGauss(SistLinear_t *SL) {
   triang(SL);
-  retrossubs(SL, X);
+  retrossubs(SL);
 }

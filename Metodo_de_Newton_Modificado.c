@@ -55,12 +55,12 @@ void retrossubpz(SistLinear_t *SL) {
   }
 }
 
-void retrossubs2(SistLinear_t *SL, double *X) {
+void retrossubs2(SistLinear_t *SL) {
   for (int i = SL->num_v-1; i >=0; --i) {
-    X[i] = SL->z[i];
+    SL->X[i] = SL->z[i];
     for (int j = i+1; j < SL->num_v; j++)
-      X[i] -= SL->A[i][j] * X[j];
-    X[i] /= SL->A[i][i];
+      SL->X[i] -= SL->A[i][j] * SL->X[j];
+    SL->X[i] /= SL->A[i][i];
   }
 }
 
@@ -87,8 +87,8 @@ void triangLU(SistLinear_t *SL) {
   }
 }
 
-void FatLU(SistLinear_t *SL, double *X) {
+void FatLU(SistLinear_t *SL) {
   triangLU(SL);
   retrossubpz(SL);
-  retrossubs2(SL, X);
+  retrossubs2(SL);
 }

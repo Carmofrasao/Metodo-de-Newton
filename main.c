@@ -17,6 +17,8 @@ int main (){
   
   int i = 0;
   void *f_aux;
+
+  double TtotalEG, TtotalLU, TtotalGS, TderivadasEG, TderivadasLU, TderivadasGS, TslEG, TslLU, TslGS;
   
   while (SL = lerSistLinear())
   {
@@ -66,35 +68,33 @@ int main (){
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /*
     // Metodo de Newton Padrao
-    double *X = (double *) malloc(sizeof(double)*SL->n);
 
-    printf("\n***** Sistema %d --> n = %d\n", i+1, SL->n);
+    memset(SL->X, 0, sizeof(SL->X));
+
     double tTotal = timestamp();
-    eliminacaoGauss(SL, X);
-    tTotal = timestamp() - tTotal;
-    printf("  --> X: ");
-    prnVetorDouble(X, SL->n);
-    printf("  --> Tempo: %lf ms\n", tTotal);
+    eliminacaoGauss(SL);
+    TtotalEG = timestamp() - tTotal;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //Metodo de Newton Modificado
 
-    printf("\n***** Sistema %d --> n = %d\n", i+1, SL->n);
+    memset(SL->X, 0, sizeof(SL->X));
 
     tTotal = timestamp();
-    FatLU(SL, X);
-    tTotal = timestamp() - tTotal;
-    printf("  --> X: ");
-    prnVetorDouble(X, SL->n);
-    printf("  --> Tempo: %lf ms\n", tTotal);
+    FatLU(SL);
+    TtotalLU = timestamp() - tTotal;
     
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //Metodo de Newton Inexato
 
+    memset(SL->X, 0, sizeof(SL->X));
+
+    tTotal = timestamp();
     Newton_Inexato(SL);
+    TtotalGS = timestamp() - tTotal;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

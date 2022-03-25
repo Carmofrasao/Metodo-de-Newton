@@ -5,10 +5,10 @@
 
 void pivot(SistLinear_t *SL, int i);
 
-void retrossubs(SistLinear_t *SL, double *X);
+void retrossubs(SistLinear_t *SL);
 
 void triang(SistLinear_t *SL);
 
-void eliminacaoGauss(SistLinear_t *SL, double *X);
+void eliminacaoGauss(SistLinear_t *SL);
 
 #endif

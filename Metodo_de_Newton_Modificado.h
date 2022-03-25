@@ -9,10 +9,10 @@ void pivotz(SistLinear_t *SL, int i);
 
 void retrossubpz(SistLinear_t *SL);
 
-void retrossubs2(SistLinear_t *SL, double *X);
+void retrossubs2(SistLinear_t *SL);
 
 void triangLU(SistLinear_t *SL);
 
-void FatLU(SistLinear_t *SL, double *X);
+void FatLU(SistLinear_t *SL);
 
 #endif
