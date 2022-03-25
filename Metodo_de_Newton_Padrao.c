@@ -90,14 +90,14 @@ double * calc_grad(SistLinear_t *SL)
 
 double ** calc_hes(SistLinear_t *SL)
 {
-  double ** m_aux = (double**)malloc(SL->num_v*sizeof(double*));
+  double ** m_aux = (double**)calloc(SL->num_v, sizeof(double*));
   for(int i = 0; i < SL->num_v; i++)
   {
-    m_aux[i] = (double*)malloc(SL->num_v*sizeof(double));
+    m_aux[i] = (double*)calloc(SL->num_v, sizeof(double));
   }
   char aux[4];
   char Xn[4];
-  char **X = (char**) malloc(SL->num_v*sizeof(char*));
+  char **X = (char**) calloc(SL->num_v, sizeof(char*));
 
   for(int l = 0; l < SL->num_v; l++)
   {
@@ -119,8 +119,14 @@ double ** calc_hes(SistLinear_t *SL)
   return m_aux;
 }
 
-double * Newton_Padrao(SistLinear_t *SL)
+double ** Newton_Padrao(SistLinear_t *SL)
 {
+  double ** m_res = (double**) calloc(SL->max_iter, sizeof(double*));
+  for(int i = 0; i < SL->max_iter; i++)
+  { 
+    m_res[i] = (double*) calloc(SL->max_iter, sizeof(double));
+  }
+
   for (int i = 0; i < SL->max_iter; i++)
   {
     double aux = 0.0;
@@ -137,8 +143,10 @@ double * Newton_Padrao(SistLinear_t *SL)
       }
     }
 
+    m_res[i] = SL->Xeg;
+
     if(fabs(aux) < SL->epsilon)
-      return SL->Xeg;
+      return m_res;
     double * delta = (double*) calloc(SL->num_v, sizeof(double));
 
     delta = eliminacaoGauss(SL, delta, m_aux, grad);
@@ -158,8 +166,10 @@ double * Newton_Padrao(SistLinear_t *SL)
       }
     }
 
+    m_res[i+1] = SL->Xeg;
+
     if(fabs(aux) < SL->epsilon)
-      return SL->Xeg;
+      return m_res;
   }
   return NULL;
 }

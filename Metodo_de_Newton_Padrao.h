@@ -15,6 +15,6 @@ double * calc_grad(SistLinear_t *SL);
 
 double ** calc_hes(SistLinear_t *SL);
 
-double *Newton_Padrao(SistLinear_t *SL);
+double ** Newton_Padrao(SistLinear_t *SL);
 
 #endif

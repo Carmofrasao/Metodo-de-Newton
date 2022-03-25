@@ -34,6 +34,24 @@ int main (){
   
   while (SL = lerSistLinear())
   {
+    double ** m_reseg = (double**) calloc(SL->max_iter, sizeof(double*));
+    for(int i = 0; i < SL->max_iter; i++)
+    { 
+      m_reseg[i] = (double*) calloc(SL->max_iter, sizeof(double));
+    }
+
+    double ** m_reslu = (double**) calloc(SL->max_iter, sizeof(double*));
+    for(int i = 0; i < SL->max_iter; i++)
+    { 
+      m_reslu[i] = (double*) calloc(SL->max_iter, sizeof(double));
+    }
+
+    double ** m_resgs = (double**) calloc(SL->max_iter, sizeof(double*));
+    for(int i = 0; i < SL->max_iter; i++)
+    { 
+      m_resgs[i] = (double*) calloc(SL->max_iter, sizeof(double));
+    }
+
     //criando matriz hessiana
     clean_fgets(SL->eq_aux);
     for(int n = 0; n < SL->num_v; n++)
@@ -77,7 +95,7 @@ int main (){
     //Newton Padrão
 
     double tTotal = timestamp();
-    SL->Xeg = Newton_Padrao(SL);
+    m_reseg = Newton_Padrao(SL);
     TtotalEG = timestamp() - tTotal;
     
     /*
@@ -101,6 +119,20 @@ int main (){
     */
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    memset(Xn, 0, sizeof(Xn));
+    memset(aux, 0, sizeof(aux));
+    f_aux = evaluator_create(SL->eq_aux);
+    assert(f_aux);
+
+    char *X[SL->num_v];
+
+    for (int i = 0; i < SL->num_v; i++)
+    {
+      sprintf(aux, "%d", i+1);
+      strcat(strcpy(Xn, "x"), aux);
+      X[i] = Xn;
+    }
+
     // cabeçalho
     printf("%d\n", SL->num_v);
     printf("%s\n", SL->eq_aux);
@@ -109,12 +141,12 @@ int main (){
     // para cada iteração
     for (int i = 0; i < SL->max_iter; i++) {
       printf("%d \t\t| ", i+1); // imprime iteração
-
-      if (SL->Xeg[i] != 0.0) {  // se nesta iteração o valor da primeira coluna existe, imprime
-        if (isnan(SL->Xeg[i]) || isinf(SL->Xeg[i]))
-          printf("%1.14e\t\t\t| ", SL->Xeg[i]);
+      double final = evaluator_evaluate (f_aux, SL->num_v, X, m_reseg[i]);
+      if (final != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
+        if (isnan(final) || isinf(final))
+          printf("%1.14e\t\t\t| ", final);
         else
-          printf("%1.14e\t| ", SL->Xeg[i]);
+          printf("%1.14e\t| ", final);
       }
       else
         printf("\t\t\t| ");
