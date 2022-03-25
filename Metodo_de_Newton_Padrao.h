@@ -9,6 +9,6 @@ void retrossubs(SistLinear_t *SL);
 
 void triang(SistLinear_t *SL);
 
-void eliminacaoGauss(SistLinear_t *SL);
+double eliminacaoGauss(SistLinear_t *SL);
 
 #endif

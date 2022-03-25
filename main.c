@@ -84,7 +84,6 @@ int main (){
     tTotal = timestamp();
     FatLU(SL);
     TtotalLU = timestamp() - tTotal;
-    
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -121,8 +120,7 @@ int main (){
     printf("Tempo total \t| %1.14e\t| %1.14e\t| %1.14e\n", TtotalEG, TtotalLU, TtotalGS);
     printf("Tempo derivadas | %1.14e\t| %1.14e\t| %1.14e\n", TderivadasEG, TderivadasLU, TderivadasGS);
     printf("Tempo SL \t| %1.14e\t| %1.14e\t| %1.14e\n", TslEG, TslLU, TslGS);
-
-    free(X);*/
+    */
     ++i;
   }
   //liberaSistLinear(SL);

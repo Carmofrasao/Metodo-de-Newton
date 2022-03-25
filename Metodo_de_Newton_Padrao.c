@@ -51,7 +51,13 @@ void triang(SistLinear_t *SL) {
   }
 }
 
-  void eliminacaoGauss(SistLinear_t *SL) {
-  triang(SL);
-  retrossubs(SL);
+double eliminacaoGauss(SistLinear_t *SL) {
+  for(int i = 0; i < SL->max_iter; i++)
+  {
+    if(fabs(SL->X[i]) < SL->epsilon)
+      return SL->X[i];
+    
+    triang(SL);
+    retrossubs(SL);
+  }
 }
