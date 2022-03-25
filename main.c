@@ -36,7 +36,6 @@ int main (){
   {
     //criando matriz hessiana
     clean_fgets(SL->eq_aux);
-    printf("%s\n", SL->eq_aux);
     for(int n = 0; n < SL->num_v; n++)
     {
       for(int l = 0; l < SL->num_v; l++)
@@ -103,7 +102,9 @@ int main (){
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // cabeçalho
-    printf("Iteração \t| Newton Padrão \t| Newton Modificado \t| Newton Inexato\n");
+    printf("%d\n", SL->num_v);
+    printf("%s\n", SL->eq_aux);
+    printf("#Iteração \t| Newton Padrão \t| Newton Modificado \t| Newton Inexato\n");
 
     // para cada iteração
     for (int i = 0; i < SL->max_iter; i++) {

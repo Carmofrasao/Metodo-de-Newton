@@ -33,13 +33,13 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
       return NULL;
     }
 
-    SL->A = (double **) malloc(sizeof(double *)*n);
+    SL->A = (double **) calloc(n, sizeof(double *));
     if (!(SL->A)) {
       free(SL);
       return NULL;
     }
 
-    SL->M = (double *) malloc(sizeof(double)*n*n);
+    SL->M = (double *) calloc(n*n, sizeof(double));
     if (!(SL->M)) {
       free(SL->A);
       free(SL);
@@ -49,7 +49,7 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
     for (int i=0; i < n; ++i)
       SL->A[i] = SL->M + i*n;
 
-    SL->b = (double *) malloc(sizeof(double)*n);
+    SL->b = (double *) calloc(n, sizeof(double));
     if (!(SL->b)) {
       free(SL->M);
       free(SL->A);
@@ -57,7 +57,7 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
       return NULL;
     }
 
-    SL->L = (double**) malloc(n*sizeof(double*));
+    SL->L = (double**) calloc(n, sizeof(double*));
     if (!(SL->L)) {
       free(SL->M);
       free(SL->A);
@@ -66,10 +66,10 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
     }
     for (int i = 0; i < n; i++)
     {
-      SL->L[i] = (double*) malloc(n*sizeof(double));
+      SL->L[i] = (double*) calloc(n, sizeof(double));
     }
     
-    SL->U = (double**) malloc(n*sizeof(double*));
+    SL->U = (double**) calloc(n, sizeof(double*));
     if (!(SL->U)) {
       free(SL->M);
       free(SL->A);
@@ -78,7 +78,7 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
     }
     for (int i = 0; i < n; i++)
     {
-      SL->U[i] = (double*) malloc(n*sizeof(double));
+      SL->U[i] = (double*) calloc(n, sizeof(double));
     }
 
     SL->z = (double*) calloc(n, sizeof(double));
