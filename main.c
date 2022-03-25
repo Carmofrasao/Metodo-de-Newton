@@ -106,7 +106,7 @@ int main (){
     printf("Iteração \t| Newton Padrão \t| Newton Modificado \t| Newton Inexato\n");
 
     // para cada iteração
-    for (int i = 0; i < SL->num_v; i++) {
+    for (int i = 0; i < SL->max_iter; i++) {
       printf("%d \t\t| ", i+1); // imprime iteração
 
       if (SL->Xeg[i] != 0.0) {  // se nesta iteração o valor da primeira coluna existe, imprime
@@ -117,8 +117,6 @@ int main (){
       }
       else
         printf("\t\t\t| ");
-
-      // repete para as outras duas colunas...
 
       if (SL->Xlu[i] != 0.0) {  // se nesta iteração o valor da primeira coluna existe, imprime
         if (isnan(SL->Xlu[i]) || isinf(SL->Xlu[i]))
@@ -136,7 +134,7 @@ int main (){
           printf("%1.14e\t ", SL->Xgs[i]);
       }
       else
-        printf("\n\t\t\t ");
+        printf("\t\t\t ");
       printf("\n");
     }
 
