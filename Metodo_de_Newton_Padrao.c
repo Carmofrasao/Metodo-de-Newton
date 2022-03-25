@@ -82,7 +82,7 @@ double * calc_grad(SistLinear_t *SL)
     }
     for(int l = 0; l < SL->num_v; l++)
     {
-      res[l] = evaluator_evaluate(SL->GRADIENTE[l], SL->num_v, X, SL->X);
+      res[l] = evaluator_evaluate(SL->GRADIENTE[l], SL->num_v, X, SL->Xeg);
     }
   }
   return res;
@@ -112,7 +112,7 @@ double ** calc_hes(SistLinear_t *SL)
   {
     for(int l = 0; l < SL->num_v; l++)
     {
-      m_aux[i][l] = evaluator_evaluate(SL->HESSIANA[i][l], SL->num_v, X, SL->X);
+      m_aux[i][l] = evaluator_evaluate(SL->HESSIANA[i][l], SL->num_v, X, SL->Xeg);
     }
   }
 
@@ -131,35 +131,35 @@ double * Newton_Padrao(SistLinear_t *SL)
 
     for (int i = 0; i < SL->num_v; i++)
     {
-      if(aux <= SL->X[i])
+      if(aux <= SL->Xeg[i])
       {
-        aux = SL->X[i];
+        aux = res[i];
       }
     }
     
     if(fabs(aux) < SL->epsilon)
-      return SL->X;
+      return SL->Xeg;
     double * delta = (double*) malloc(SL->num_v*sizeof(double));
 
     delta = eliminacaoGauss(SL, delta, m_aux, res);
 
     for (int l = 0; l < SL->num_v; l++)
     {
-      SL->X[l] = SL->X[l] + delta[l];
+      SL->Xeg[l] = SL->Xeg[l] + delta[l];
     }
 
     aux = 0.0;
 
     for (int i = 0; i < SL->num_v-1; i++)
     {
-      if(aux <= SL->X[i])
+      if(aux <= SL->Xeg[i])
       {
         aux = delta[i];
       }
     }
 
     if(fabs(aux) < SL->epsilon)
-      return SL->X;
+      return SL->Xeg;
   }
   return NULL;
 }

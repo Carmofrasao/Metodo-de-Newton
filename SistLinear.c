@@ -87,8 +87,20 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
       return NULL;
     }
   
-    SL->X = (double*) calloc(n, sizeof(double));
-    if (!(SL->X)) {
+    SL->Xeg = (double*) calloc(n, sizeof(double));
+    if (!(SL->Xeg)) {
+      free(SL);
+      return NULL;
+    }
+
+    SL->Xlu = (double*) calloc(n, sizeof(double));
+    if (!(SL->Xlu)) {
+      free(SL);
+      return NULL;
+    }
+
+    SL->Xgs = (double*) calloc(n, sizeof(double));
+    if (!(SL->Xgs)) {
       free(SL);
       return NULL;
     }
@@ -109,7 +121,9 @@ void liberaSistLinear(SistLinear_t *SL) {
   }
   free(SL->U);
   free(SL->z);
-  free(SL->X);
+  free(SL->Xeg);
+  free(SL->Xlu);
+  free(SL->Xgs);
   free(SL->b);
   free(SL->M);
   free(SL->A);
@@ -144,10 +158,13 @@ SistLinear_t *lerSistLinear() {
     
     SL = alocaSistLinear(n);
     scanf("%s", SL->eq_aux);
-  
+    double aux = 0.0;
     for (int l = 0; l < SL->num_v; l++)
     {
-      scanf("%le", &(SL->X[l]));
+      scanf("%le", &(aux));
+      SL->Xeg[l] = aux;
+      SL->Xlu[l] = aux;
+      SL->Xgs[l] = aux;
     }
     
     scanf("%le", &(SL->epsilon));

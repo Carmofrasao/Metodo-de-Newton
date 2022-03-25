@@ -18,7 +18,9 @@ typedef struct {
   void **GRADIENTE;     //vetor de gradientes
   double epsilon;       //tolerancia no metodo de gauss seidel
   int max_iter;         //numero maximo de iterações
-  double *X;            //vetor de resultados finais
+  double *Xeg;          //vetor de resultados finais eliminacao
+  double *Xlu;          //vetor de resultados finais fat LU
+  double *Xgs;          //vetor de resultados finais Gauss
 
 } SistLinear_t;
 
