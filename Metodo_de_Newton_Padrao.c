@@ -39,7 +39,9 @@ void retrossubs(SistLinear_t *SL, double *delta, double**hes, double * grad) {
 
 void triang(SistLinear_t *SL, double**hes, double * grad) {
   for (int i = 0; i < SL->num_v; ++i) {
+
     pivot(SL, hes, grad, i);
+
     for (int k = i+1; k < SL->num_v; ++k) {
       double m = hes[k][i] / hes[i][i];
       if (isnan(m))
@@ -79,7 +81,9 @@ double * calc_grad(SistLinear_t *SL)
       X[l] = Xn;
     }
     for(int l = 0; l < SL->num_v; l++)
-      res[l] = evaluator_evaluate(SL->GRADIENTE[l], 1, X, SL->X);
+    {
+      res[l] = evaluator_evaluate(SL->GRADIENTE[l], SL->num_v, X, SL->X);
+    }
   }
   return res;
 }
@@ -107,9 +111,10 @@ double ** calc_hes(SistLinear_t *SL)
     }
     for(int l = 0; l < SL->num_v; l++)
     {
-      m_aux[i][l] = evaluator_evaluate(SL->HESSIANA[i][l], 1, X, SL->X);
+      m_aux[i][l] = evaluator_evaluate(SL->HESSIANA[i][l], SL->num_v, X, SL->X);
     }
   }
+
   return m_aux;
 }
 

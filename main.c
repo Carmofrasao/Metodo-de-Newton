@@ -70,13 +70,6 @@ int main (){
     double tTotal = timestamp();
     SL->X = Newton_Padrao(SL);
     TtotalEG = timestamp() - tTotal;
-
-    printf("Sistema %d\n", i);
-    for (int i = 0; i < SL->num_v; i++)
-    {
-      printf("%f ", SL->X[i]);
-    }
-    printf("\n");
     
     /*
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
