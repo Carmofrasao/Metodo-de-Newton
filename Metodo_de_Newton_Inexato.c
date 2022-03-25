@@ -58,7 +58,7 @@ void gaussSeidel(SistLinear_t *e, double **matriz) {
     x[i] = r[i];
   }
 
-  e->X = x; //copiar dados para estrutura
+  e->Xgs = x; //copiar dados para estrutura
 
   free(r);
 }
@@ -108,7 +108,7 @@ void Newton_Inexato(SistLinear_t *e){
   }
   free(matriz);
 
-  free(e->X);
+  free(e->Xgs);
 
   free(e->b);
 } 

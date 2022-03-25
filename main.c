@@ -75,12 +75,12 @@ int main (){
     // Metodo de Newton Padrao
 
     double tTotal = timestamp();
-    SL->X = Newton_Padrao(SL);
+    SL->Xeg = Newton_Padrao(SL);
     TtotalEG = timestamp() - tTotal;
 
     for (int i = 0; i < SL->num_v; i++)
     {
-      printf("%f ", SL->X[i]);
+      printf("%f ", SL->Xeg[i]);
     }
     printf("\n\n");
     
