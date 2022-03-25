@@ -3,13 +3,13 @@
 
 #include "SistLinear.h"
 
-void pivot(SistLinear_t *SL, int i);
+void pivot(SistLinear_t *SL, double**hes, double * grad, int i);
 
-void retrossubs(SistLinear_t *SL);
+void retrossubs(SistLinear_t *SL, double *delta, double**hes, double * grad);
 
-void triang(SistLinear_t *SL);
+void triang(SistLinear_t *SL, double**hes, double * grad);
 
-double eliminacaoGauss(SistLinear_t *SL, double *delta, double**hes, double * grad) ;
+double* eliminacaoGauss(SistLinear_t *SL, double *delta, double**hes, double * grad) ;
 
 double * calc_grad(SistLinear_t *SL);
 

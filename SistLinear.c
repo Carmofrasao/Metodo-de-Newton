@@ -27,12 +27,6 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
       SL->HESSIANA[i] = (void**) calloc(n, sizeof(void*));
     }
 
-    SL->aprox = (double*) calloc(n, sizeof(double)); 
-    if (!(SL->aprox)) {
-      free(SL);
-      return NULL;
-    }
-
     SL->eq_aux = (char*) calloc(1024, sizeof(char));
     if (!(SL->eq_aux)) {
       free(SL);
@@ -153,7 +147,7 @@ SistLinear_t *lerSistLinear() {
   
     for (int l = 0; l < SL->num_v; l++)
     {
-      scanf("%le", &(SL->aprox[l]));
+      scanf("%le", &(SL->X[l]));
     }
     
     scanf("%le", &(SL->epsilon));

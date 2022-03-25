@@ -20,7 +20,7 @@ int main (){
   char aux[4];
   char Xn[4];
 
-  //double TtotalEG, TtotalLU, TtotalGS, TderivadasEG, TderivadasLU, TderivadasGS, TslEG, TslLU, TslGS;
+  double TtotalEG, TtotalLU, TtotalGS, TderivadasEG, TderivadasLU, TderivadasGS, TslEG, TslLU, TslGS;
   
   while (SL = lerSistLinear())
   {
@@ -64,15 +64,21 @@ int main (){
     }
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /*
+    
     // Metodo de Newton Padrao
 
-    memset(SL->X, 0, sizeof(SL->X));
-
     double tTotal = timestamp();
-    Newton_Padrao(SL);
+    SL->X = Newton_Padrao(SL);
     TtotalEG = timestamp() - tTotal;
 
+    printf("Sistema %d\n", i);
+    for (int i = 0; i < SL->num_v; i++)
+    {
+      printf("%f ", SL->X[i]);
+    }
+    printf("\n");
+    
+    /*
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //Metodo de Newton Modificado
