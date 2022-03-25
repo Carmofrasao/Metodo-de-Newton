@@ -76,7 +76,7 @@ double * calc_grad(SistLinear_t *SL)
 
     for(int l = 0; l < SL->num_v; l++)
     {
-      sprintf(aux, "%d", l);
+      sprintf(aux, "%d", l+1);
       strcat(strcpy(Xn, "x"), aux);
       X[l] = Xn;
     }
@@ -99,16 +99,17 @@ double ** calc_hes(SistLinear_t *SL)
   char Xn[4];
   char **X = (char**) malloc(SL->num_v*sizeof(char*));
 
+  for(int l = 0; l < SL->num_v; l++)
+  {
+    memset(Xn, 0, sizeof(Xn));
+    memset(aux, 0, sizeof(aux));
+    sprintf(aux, "%d", l+1);
+    strcat(strcpy(Xn, "x"), aux);
+    X[l] = Xn;
+  }
+
   for (int i = 0; i < SL->num_v; i++)
   {
-    for(int l = 0; l < SL->num_v; l++)
-    {
-      memset(Xn, 0, sizeof(Xn));
-      memset(aux, 0, sizeof(aux));
-      sprintf(aux, "%d", l);
-      strcat(strcpy(Xn, "x"), aux);
-      X[l] = Xn;
-    }
     for(int l = 0; l < SL->num_v; l++)
     {
       m_aux[i][l] = evaluator_evaluate(SL->HESSIANA[i][l], SL->num_v, X, SL->X);

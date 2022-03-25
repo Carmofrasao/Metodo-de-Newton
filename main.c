@@ -35,19 +35,26 @@ int main (){
         memset(aux, 0, sizeof(aux));
         f_aux = evaluator_create(SL->eq_aux);
         assert(f_aux);
-        sprintf(aux, "%d", n);
+        printf("Funcao original\n");
+        printf("%s\n", evaluator_get_string (f_aux));
+        sprintf(aux, "%d", n+1);
         strcat(strcpy(Xn, "x"), aux); 
         f_aux = evaluator_derivative (f_aux, Xn);
         assert(f_aux);
+        printf("Primeira derivada\n");
+        printf("%s\n", evaluator_get_string (f_aux));
         memset(Xn, 0, sizeof(Xn));
         memset(aux, 0, sizeof(aux));
-        sprintf(aux, "%d", l);
+        sprintf(aux, "%d", l+1);
         strcat(strcpy(Xn, "x"), aux); 
         f_aux = evaluator_derivative (f_aux, Xn);
         assert(f_aux);
+        printf("Segunda derivada\n");
+        printf("%s\n", evaluator_get_string (f_aux));
         SL->HESSIANA[n][l] = f_aux;
       }
     }
+    printf("\n");
 
     //criando vetor gradiente
     for(int l = 0; l < SL->num_v; l++)
@@ -56,7 +63,7 @@ int main (){
       memset(aux, 0, sizeof(aux));
       f_aux = evaluator_create(SL->eq_aux);
       assert(f_aux);
-      sprintf(aux, "%d", l);
+      sprintf(aux, "%d", l+1);
       strcat(strcpy(Xn, "x"), aux); 
       f_aux = evaluator_derivative (f_aux, Xn);
       assert(f_aux);
@@ -70,6 +77,13 @@ int main (){
     double tTotal = timestamp();
     SL->X = Newton_Padrao(SL);
     TtotalEG = timestamp() - tTotal;
+
+    for (int i = 0; i < SL->num_v; i++)
+    {
+      printf("%f ", SL->X[i]);
+    }
+    printf("\n\n");
+    
     
     /*
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
