@@ -34,22 +34,22 @@ int main (){
   
   while (SL = lerSistLinear())
   {
-    double ** m_reseg = (double**) calloc(SL->max_iter, sizeof(double*));
-    for(int i = 0; i < SL->max_iter; i++)
+    double ** m_reseg = (double**) calloc(SL->max_iter+1, sizeof(double*));
+    for(int i = 0; i < SL->max_iter+1; i++)
     { 
-      m_reseg[i] = (double*) calloc(SL->max_iter, sizeof(double));
+      m_reseg[i] = (double*) calloc(SL->num_v, sizeof(double));
     }
 
-    double ** m_reslu = (double**) calloc(SL->max_iter, sizeof(double*));
-    for(int i = 0; i < SL->max_iter; i++)
+    double ** m_reslu = (double**) calloc(SL->max_iter+1, sizeof(double*));
+    for(int i = 0; i < SL->max_iter+1; i++)
     { 
-      m_reslu[i] = (double*) calloc(SL->max_iter, sizeof(double));
+      m_reslu[i] = (double*) calloc(SL->num_v, sizeof(double));
     }
 
-    double ** m_resgs = (double**) calloc(SL->max_iter, sizeof(double*));
-    for(int i = 0; i < SL->max_iter; i++)
+    double ** m_resgs = (double**) calloc(SL->max_iter+1, sizeof(double*));
+    for(int i = 0; i < SL->max_iter+1; i++)
     { 
-      m_resgs[i] = (double*) calloc(SL->max_iter, sizeof(double));
+      m_resgs[i] = (double*) calloc(SL->num_v, sizeof(double));
     }
 
     //criando matriz hessiana
@@ -139,7 +139,7 @@ int main (){
     printf("#Iteração \t| Newton Padrão \t| Newton Modificado \t| Newton Inexato\n");
 
     // para cada iteração
-    for (int i = 0; i < SL->max_iter; i++) {
+    for (int i = 0; i < SL->max_iter+1; i++) {
       printf("%d \t\t| ", i+1); // imprime iteração
       double final = evaluator_evaluate (f_aux, SL->num_v, X, m_reseg[i]);
       if (final != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
