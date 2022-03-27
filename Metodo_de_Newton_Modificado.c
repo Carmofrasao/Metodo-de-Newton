@@ -147,5 +147,5 @@ double ** Newton_Modificado(SistLinear_t *SL)
     if(fabs(aux) < SL->epsilon)
       return m_res;
   }
-  return NULL;
+  return m_res;
 }

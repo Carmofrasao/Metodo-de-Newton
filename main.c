@@ -34,10 +34,10 @@ int main (){
   
   while (SL = lerSistLinear())
   {
-    double ** m_reseg = (double**) calloc(SL->max_iter+1, sizeof(double*));
-    for(int i = 0; i < SL->max_iter+1; i++)
+    double ** m_reseg = (double**) calloc(2*SL->max_iter+1, sizeof(double*));
+    for(int i = 0; i < 2*SL->max_iter+1; i++)
     { 
-      m_reseg[i] = (double*) calloc(SL->num_v+1, sizeof(double));
+      m_reseg[i] = (double*) calloc(SL->num_v, sizeof(double));
     }
 
     double ** m_reslu = (double**) calloc(SL->max_iter+1, sizeof(double*));
@@ -96,7 +96,6 @@ int main (){
     m_reseg = Newton_Padrao(SL);
     TtotalEG = timestamp() - tTotal;
     
-    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //Metodo de Newton Modificado
@@ -137,10 +136,11 @@ int main (){
     printf("%s\n", SL->eq_aux);
     printf("#Iteração \t| Newton Padrão \t| Newton Modificado \t| Newton Inexato\n");
 
+    double final;
     // para cada iteração
     for (int i = 0; i <= SL->max_iter; i++) {
       printf("%d \t\t| ", i); // imprime iteração
-      double final = evaluator_evaluate (f_aux, SL->num_v, X, m_reseg[i]);
+      final = evaluator_evaluate (f_aux, SL->num_v, X, m_reseg[i]);
       if (final != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
         if (isnan(final) || isinf(final))
           printf("%1.14e\t\t\t| ", final);
