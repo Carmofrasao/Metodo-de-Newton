@@ -103,6 +103,9 @@ double ** Newton_Modificado(SistLinear_t *SL)
     m_res[i] = (double*) calloc(SL->num_v, sizeof(double));
   }
 
+  for(int z = 0; z < SL->num_v; z++)
+    m_res[0][z] = SL->Xlu[z];
+
   for (int i = 0; i < SL->max_iter; i++)
   {
     double aux = 0.0;
@@ -119,8 +122,6 @@ double ** Newton_Modificado(SistLinear_t *SL)
       }
     }
 
-    m_res[i] = SL->Xlu;
-
     if(fabs(aux) < SL->epsilon)
       return m_res;
     double * delta = (double*) calloc(SL->num_v, sizeof(double));
@@ -129,7 +130,7 @@ double ** Newton_Modificado(SistLinear_t *SL)
 
     for (int l = 0; l < SL->num_v; l++)
     {
-      SL->Xeg[l] += delta[l];
+      SL->Xlu[l] += delta[l];
     }
 
     aux = 0.0;
@@ -142,7 +143,8 @@ double ** Newton_Modificado(SistLinear_t *SL)
       }
     }
 
-    m_res[i+1] = SL->Xeg;
+    for(int z = 0; z < SL->num_v; z++)
+      m_res[i+1][z] = SL->Xlu[z];
 
     if(fabs(aux) < SL->epsilon)
       return m_res;

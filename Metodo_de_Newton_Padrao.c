@@ -120,13 +120,14 @@ double ** calc_hes(SistLinear_t *SL, double * X)
 
 double ** Newton_Padrao(SistLinear_t *SL)
 {
-  double ** m_res = (double**) calloc(2*SL->max_iter+1, sizeof(double*));
-  for(int i = 0; i < 2*SL->max_iter+1; i++)
+  double ** m_res = (double**) calloc(SL->max_iter+1, sizeof(double*));
+  for(int i = 0; i < SL->max_iter+1; i++)
   { 
     m_res[i] = (double*) calloc(SL->num_v, sizeof(double));
   }
 
-  m_res[0] = SL->Xeg;
+  for(int z = 0; z < SL->num_v; z++)
+    m_res[0][z] = SL->Xeg[z];
 
   for (int i = 0; i < SL->max_iter; i++)
   {
@@ -165,7 +166,8 @@ double ** Newton_Padrao(SistLinear_t *SL)
       }
     }
 
-    m_res[i+1] = SL->Xeg;
+    for(int z = 0; z < SL->num_v; z++)
+      m_res[i+1][z] = SL->Xeg[z];
 
     if(fabs(aux) < SL->epsilon)
       return m_res;

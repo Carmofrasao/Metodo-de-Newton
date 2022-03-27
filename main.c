@@ -34,8 +34,8 @@ int main (){
   
   while (SL = lerSistLinear())
   {
-    double ** m_reseg = (double**) calloc(2*SL->max_iter+1, sizeof(double*));
-    for(int i = 0; i < 2*SL->max_iter+1; i++)
+    double ** m_reseg = (double**) calloc(SL->max_iter+1, sizeof(double*));
+    for(int i = 0; i < SL->max_iter+1; i++)
     { 
       m_reseg[i] = (double*) calloc(SL->num_v, sizeof(double));
     }
