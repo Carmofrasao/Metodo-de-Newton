@@ -48,9 +48,9 @@ void pivotz(SistLinear_t *SL, int i) {
   }
 }
 
-void retrossubpz(SistLinear_t *SL) {
+void retrossubpz(SistLinear_t *SL, double * grad) {
   for (int i = 0; i < SL->num_v; ++i) {
-    SL->z[i] = SL->b[i];
+    SL->z[i] = grad[i];
     for (int j = 0; j < i; j++)
       SL->z[i] -= SL->L[i][j] * SL->z[j];
   }
@@ -90,7 +90,7 @@ void triangLU(SistLinear_t *SL, double**hes, double * grad) {
 
 double * FatLU(SistLinear_t *SL, double *delta, double**hes, double * grad) {
   triangLU(SL, hes, grad);
-  retrossubpz(SL);
+  retrossubpz(SL, grad);
   retrossubs2(SL, hes, delta);
   return delta;
 }
@@ -102,6 +102,9 @@ double ** Newton_Modificado(SistLinear_t *SL)
   { 
     m_res[i] = (double*) calloc(SL->num_v, sizeof(double));
   }
+
+  for(int z = 0; z < SL->num_v; z++)
+    m_res[0][z] = SL->Xlu[z];
 
   for (int i = 0; i < SL->max_iter; i++)
   {
@@ -119,8 +122,6 @@ double ** Newton_Modificado(SistLinear_t *SL)
       }
     }
 
-    m_res[i] = SL->Xlu;
-
     if(fabs(aux) < SL->epsilon)
       return m_res;
     double * delta = (double*) calloc(SL->num_v, sizeof(double));
@@ -129,7 +130,7 @@ double ** Newton_Modificado(SistLinear_t *SL)
 
     for (int l = 0; l < SL->num_v; l++)
     {
-      SL->Xeg[l] += delta[l];
+      SL->Xlu[l] += delta[l];
     }
 
     aux = 0.0;
@@ -142,7 +143,8 @@ double ** Newton_Modificado(SistLinear_t *SL)
       }
     }
 
-    m_res[i+1] = SL->Xeg;
+    for(int z = 0; z < SL->num_v; z++)
+      m_res[i+1][z] = SL->Xlu[z];
 
     if(fabs(aux) < SL->epsilon)
       return m_res;
