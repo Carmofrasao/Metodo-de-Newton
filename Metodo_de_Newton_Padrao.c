@@ -61,13 +61,13 @@ double* eliminacaoGauss(SistLinear_t *SL, double *delta, double**hes, double * g
     return delta;
 }
 
-double * calc_grad(SistLinear_t *SL)
+double * calc_grad(SistLinear_t *SL, double * X)
 {
   double * res = (double*)malloc(SL->num_v*sizeof(double));
 
   char aux[4];
   char Xn[4];
-  char **X = (char**) malloc(SL->num_v*sizeof(char*));
+  char **Xs = (char**) malloc(SL->num_v*sizeof(char*));
 
   for(int i = 0; i < SL->max_iter; i++)
   {
@@ -78,17 +78,17 @@ double * calc_grad(SistLinear_t *SL)
     {
       sprintf(aux, "%d", l+1);
       strcat(strcpy(Xn, "x"), aux);
-      X[l] = Xn;
+      Xs[l] = Xn;
     }
     for(int l = 0; l < SL->num_v; l++)
     {
-      res[l] = evaluator_evaluate(SL->GRADIENTE[l], SL->num_v, X, SL->Xeg);
+      res[l] = evaluator_evaluate(SL->GRADIENTE[l], SL->num_v, Xs, X);
     }
   }
   return res;
 }
 
-double ** calc_hes(SistLinear_t *SL)
+double ** calc_hes(SistLinear_t *SL, double * X)
 {
   double ** m_aux = (double**)calloc(SL->num_v, sizeof(double*));
   for(int i = 0; i < SL->num_v; i++)
@@ -97,7 +97,7 @@ double ** calc_hes(SistLinear_t *SL)
   }
   char aux[4];
   char Xn[4];
-  char **X = (char**) calloc(SL->num_v, sizeof(char*));
+  char **Xs = (char**) calloc(SL->num_v, sizeof(char*));
 
   for(int l = 0; l < SL->num_v; l++)
   {
@@ -105,16 +105,19 @@ double ** calc_hes(SistLinear_t *SL)
     memset(aux, 0, sizeof(aux));
     sprintf(aux, "%d", l+1);
     strcat(strcpy(Xn, "x"), aux);
-    X[l] = Xn;
+    Xs[l] = Xn;
   }
 
   for (int i = 0; i < SL->num_v; i++)
   {
     for(int l = 0; l < SL->num_v; l++)
     {
-      m_aux[i][l] = evaluator_evaluate(SL->HESSIANA[i][l], SL->num_v, X, SL->Xeg);
+      m_aux[i][l] = evaluator_evaluate(SL->HESSIANA[i][l], SL->num_v, Xs, X);
+      printf("%f ", m_aux[i][l]);
     }
+    printf("\n");
   }
+  printf("\n");
 
   return m_aux;
 }
@@ -131,9 +134,9 @@ double ** Newton_Padrao(SistLinear_t *SL)
   {
     double aux = 0.0;
 
-    double * grad = calc_grad(SL);
+    double * grad = calc_grad(SL, SL->Xeg);
     
-    double ** m_aux = calc_hes(SL);
+    double ** m_aux = calc_hes(SL, SL->Xeg);
   
     for (int i = 0; i < SL->num_v; i++)
     {

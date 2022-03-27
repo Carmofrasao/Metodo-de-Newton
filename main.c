@@ -16,9 +16,9 @@ int main (){
   SistLinear_t *SL;
   
   int i = 1;
-  void *f_aux;
   char aux[4];
   char Xn[4];
+  void * f_aux;
 
   double TtotalEG, TtotalLU, TtotalGS, TderivadasEG, TderivadasLU, TderivadasGS, TslEG, TslLU, TslGS;
 
@@ -37,7 +37,7 @@ int main (){
     double ** m_reseg = (double**) calloc(SL->max_iter+1, sizeof(double*));
     for(int i = 0; i < SL->max_iter+1; i++)
     { 
-      m_reseg[i] = (double*) calloc(SL->num_v, sizeof(double));
+      m_reseg[i] = (double*) calloc(SL->num_v+1, sizeof(double));
     }
 
     double ** m_reslu = (double**) calloc(SL->max_iter+1, sizeof(double*));
@@ -60,19 +60,18 @@ int main (){
       {
         memset(Xn, 0, sizeof(Xn));
         memset(aux, 0, sizeof(aux));
-        f_aux = evaluator_create(SL->eq_aux);
-        assert(f_aux);
+        SL->HESSIANA[n][l] = evaluator_create(SL->eq_aux);
+        assert(SL->HESSIANA[n][l]);
         sprintf(aux, "%d", n+1);
         strcat(strcpy(Xn, "x"), aux); 
-        f_aux = evaluator_derivative (f_aux, Xn);
-        assert(f_aux);
+        SL->HESSIANA[n][l] = evaluator_derivative (SL->HESSIANA[n][l], Xn);
+        assert(SL->HESSIANA[n][l]);
         memset(Xn, 0, sizeof(Xn));
         memset(aux, 0, sizeof(aux));
         sprintf(aux, "%d", l+1);
         strcat(strcpy(Xn, "x"), aux); 
-        f_aux = evaluator_derivative (f_aux, Xn);
-        assert(f_aux);
-        SL->HESSIANA[n][l] = f_aux;
+        SL->HESSIANA[n][l] = evaluator_derivative (SL->HESSIANA[n][l], Xn);
+        assert(SL->HESSIANA[n][l]);
       }
     }
 
@@ -81,13 +80,12 @@ int main (){
     {
       memset(Xn, 0, sizeof(Xn));
       memset(aux, 0, sizeof(aux));
-      f_aux = evaluator_create(SL->eq_aux);
-      assert(f_aux);
+      SL->GRADIENTE[l] = evaluator_create(SL->eq_aux);
+      assert(SL->GRADIENTE[l]);
       sprintf(aux, "%d", l+1);
       strcat(strcpy(Xn, "x"), aux); 
-      f_aux = evaluator_derivative (f_aux, Xn);
-      assert(f_aux);
-      SL->GRADIENTE[l] = f_aux;
+      SL->GRADIENTE[l] = evaluator_derivative (SL->GRADIENTE[l], Xn);
+      assert(SL->GRADIENTE[l]);
     }
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,17 +96,17 @@ int main (){
     m_reseg = Newton_Padrao(SL);
     TtotalEG = timestamp() - tTotal;
     
-    /*
+    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //Metodo de Newton Modificado
 
     tTotal = timestamp();
-    FatLU(SL);
+    m_reslu = Newton_Modificado(SL);
     TtotalLU = timestamp() - tTotal;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    /*
     //Metodo de Newton Inexato
 
     memset(SL->X, 0, sizeof(SL->X));
@@ -140,7 +138,7 @@ int main (){
 
     // para cada iteração
     for (int i = 0; i < SL->max_iter+1; i++) {
-      printf("%d \t\t| ", i+1); // imprime iteração
+      printf("%d \t\t| ", i); // imprime iteração
       double final = evaluator_evaluate (f_aux, SL->num_v, X, m_reseg[i]);
       if (final != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
         if (isnan(final) || isinf(final))
@@ -151,11 +149,13 @@ int main (){
       else
         printf("\t\t\t| ");
 
-      if (SL->Xlu[i] != 0.0) {  // se nesta iteração o valor da primeira coluna existe, imprime
-        if (isnan(SL->Xlu[i]) || isinf(SL->Xlu[i]))
-          printf("%1.14e\t\t\t| ", SL->Xlu[i]);
+
+      final = evaluator_evaluate (f_aux, SL->num_v, X, m_reslu[i]);
+      if (final != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
+        if (isnan(final) || isinf(final))
+          printf("%1.14e\t\t\t| ", final);
         else
-          printf("%1.14e\t| ", SL->Xlu[i]);
+          printf("%1.14e\t| ", final);
       }
       else
         printf("\t\t\t| ");

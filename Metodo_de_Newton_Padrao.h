@@ -11,9 +11,9 @@ void triang(SistLinear_t *SL, double**hes, double * grad);
 
 double* eliminacaoGauss(SistLinear_t *SL, double *delta, double**hes, double * grad) ;
 
-double * calc_grad(SistLinear_t *SL);
+double * calc_grad(SistLinear_t *SL, double * X);
 
-double ** calc_hes(SistLinear_t *SL);
+double ** calc_hes(SistLinear_t *SL, double * X);
 
 double ** Newton_Padrao(SistLinear_t *SL);
 
