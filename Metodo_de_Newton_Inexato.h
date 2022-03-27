@@ -7,12 +7,12 @@
 
 void clean_fgets(char *pos);
 
-void Newton_Inexato(SistLinear_t *e);
+double ** Newton_Inexato(SistLinear_t *SL);
 
 void calcula_independentes(SistLinear_t *e, double **matrix_diag);
 
 void calcula_tempo(SistLinear_t *e, double **matriz);
 
-void gaussSeidel(SistLinear_t *e, double **matriz);
+double * gaussSeidel(SistLinear_t *SL, double *delta, double **m_aux, double *grad);
 
 #endif
