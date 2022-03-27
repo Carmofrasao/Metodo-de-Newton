@@ -108,8 +108,6 @@ int main (){
     /*
     //Metodo de Newton Inexato
 
-    memset(SL->X, 0, sizeof(SL->X));
-
     tTotal = timestamp();
     Newton_Inexato(SL);
     TtotalGS = timestamp() - tTotal;
