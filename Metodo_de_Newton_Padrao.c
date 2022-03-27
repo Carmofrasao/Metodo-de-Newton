@@ -66,16 +66,15 @@ double * calc_grad(SistLinear_t *SL, double * X)
   double * res = (double*)malloc(SL->num_v*sizeof(double));
 
   char aux[4];
-  char Xn[4];
+  
   char **Xs = (char**) malloc(SL->num_v*sizeof(char*));
 
   for(int i = 0; i < SL->max_iter; i++)
   {
-    memset(Xn, 0, sizeof(Xn));
-    memset(aux, 0, sizeof(aux));
-
     for(int l = 0; l < SL->num_v; l++)
     {
+      char* Xn = (char*) malloc(4*sizeof(char));
+      memset(aux, 0, sizeof(aux));
       sprintf(aux, "%d", l+1);
       strcat(strcpy(Xn, "x"), aux);
       Xs[l] = Xn;
@@ -96,12 +95,12 @@ double ** calc_hes(SistLinear_t *SL, double * X)
     m_aux[i] = (double*)calloc(SL->num_v, sizeof(double));
   }
   char aux[4];
-  char Xn[4];
+  
   char **Xs = (char**) calloc(SL->num_v, sizeof(char*));
 
   for(int l = 0; l < SL->num_v; l++)
   {
-    memset(Xn, 0, sizeof(Xn));
+    char* Xn = (char*) malloc(4*sizeof(char));
     memset(aux, 0, sizeof(aux));
     sprintf(aux, "%d", l+1);
     strcat(strcpy(Xn, "x"), aux);
@@ -113,11 +112,8 @@ double ** calc_hes(SistLinear_t *SL, double * X)
     for(int l = 0; l < SL->num_v; l++)
     {
       m_aux[i][l] = evaluator_evaluate(SL->HESSIANA[i][l], SL->num_v, Xs, X);
-      printf("%f ", m_aux[i][l]);
     }
-    printf("\n");
   }
-  printf("\n");
 
   return m_aux;
 }

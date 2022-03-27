@@ -126,9 +126,10 @@ int main (){
 
     for (int i = 0; i < SL->num_v; i++)
     {
+      char* Xi = (char*) malloc(4*sizeof(char));
       sprintf(aux, "%d", i+1);
-      strcat(strcpy(Xn, "x"), aux);
-      X[i] = Xn;
+      strcat(strcpy(Xi, "x"), aux);
+      X[i] = Xi;
     }
 
     // cabeçalho
@@ -137,7 +138,7 @@ int main (){
     printf("#Iteração \t| Newton Padrão \t| Newton Modificado \t| Newton Inexato\n");
 
     // para cada iteração
-    for (int i = 0; i < SL->max_iter+1; i++) {
+    for (int i = 0; i <= SL->max_iter; i++) {
       printf("%d \t\t| ", i); // imprime iteração
       double final = evaluator_evaluate (f_aux, SL->num_v, X, m_reseg[i]);
       if (final != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
@@ -160,11 +161,13 @@ int main (){
       else
         printf("\t\t\t| ");
 
-      if (SL->Xgs[i] != 0.0) {  // se nesta iteração o valor da primeira coluna existe, imprime
-        if (isnan(SL->Xgs[i]) || isinf(SL->Xgs[i]))
-          printf("%1.14e\t\t\t ", SL->Xgs[i]);
+
+      final = evaluator_evaluate (f_aux, SL->num_v, X, m_resgs[i]);
+      if (final != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
+        if (isnan(final) || isinf(final))
+          printf("%1.14e\t\t\t ", final);
         else
-          printf("%1.14e\t ", SL->Xgs[i]);
+          printf("%1.14e\t ", final);
       }
       else
         printf("\t\t\t ");
