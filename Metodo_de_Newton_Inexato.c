@@ -14,7 +14,7 @@
 
 //função para "limpar" string
 void clean_fgets(char *pos) { 
-  strtok(pos, "\n");
+  //strtok(pos, "\n");
 }
 
 // Gauss-Seidel 
@@ -60,16 +60,12 @@ double * gaussSeidel(SistLinear_t *SL, double *delta, double **m_aux, double *gr
 
   e->Xgs = x; //copiar dados para estrutura
 
-  free(r);
-}*/}
+  free(r);*/
+}
 
 double * calcula_independentes(SistLinear_t *SL, double **m_aux, double *grad)
-{
-  double *indep = (double *) malloc((e->num_v) * sizeof(double));
-  for(int i = 0; i < SL->num_v, i++){
-    indep[i] = 
-  }
-
+{/*
+  double *indep = (double *) malloc((SL->num_v) * sizeof(double));
 }
 
 double ** Newton_Inexato(SistLinear_t *SL)
@@ -127,5 +123,5 @@ double ** Newton_Inexato(SistLinear_t *SL)
     if(fabs(aux) < SL->epsilon)
       return m_res;
   }
-  return m_res;
+  return m_res;*/
 }

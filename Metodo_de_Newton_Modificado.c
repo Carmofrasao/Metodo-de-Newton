@@ -106,13 +106,17 @@ double ** Newton_Modificado(SistLinear_t *SL)
   for(int z = 0; z < SL->num_v; z++)
     m_res[0][z] = SL->Xlu[z];
 
+  double ** m_aux = calc_hes(SL, SL->Xlu);
+
   for (int i = 0; i < SL->max_iter; i++)
   {
     double aux = 0.0;
 
     double * grad = calc_grad(SL, SL->Xlu);
-    
-    double ** m_aux = calc_hes(SL, SL->Xlu);
+
+    if(i % SL->num_v == 0){
+      m_aux = calc_hes(SL, SL->Xlu);
+    }  
   
     for (int i = 0; i < SL->num_v; i++)
     {

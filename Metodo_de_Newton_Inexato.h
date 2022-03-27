@@ -9,7 +9,7 @@ void clean_fgets(char *pos);
 
 double ** Newton_Inexato(SistLinear_t *SL);
 
-void calcula_independentes(SistLinear_t *e, double **matrix_diag);
+double * calcula_independentes(SistLinear_t *SL, double **m_aux, double *grad);
 
 void calcula_tempo(SistLinear_t *e, double **matriz);
 
