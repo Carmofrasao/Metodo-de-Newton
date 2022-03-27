@@ -14,12 +14,12 @@
 
 //função para "limpar" string
 void clean_fgets(char *pos) { 
-  strtok(pos, "\n");
+  //strtok(pos, "\n");
 }
 
 // Gauss-Seidel 
-void gaussSeidel(SistLinear_t *e, double **matriz) {
-  int i,j,q;
+double * gaussSeidel(SistLinear_t *SL, double *delta, double **m_aux, double *grad){
+/*  int i,j,q;
   unsigned int n = e->num_v;
   double *r =  malloc((e->num_v) * sizeof (double)) ;
   double temp,sum,erroMaximo,erroCalculado;
@@ -60,55 +60,68 @@ void gaussSeidel(SistLinear_t *e, double **matriz) {
 
   e->Xgs = x; //copiar dados para estrutura
 
-  free(r);
+  free(r);*/
 }
 
-void calcula_independentes(SistLinear_t *e, double **matrix_diag){
+double * calcula_independentes(SistLinear_t *SL, double **m_aux, double *grad)
+{/*
+  double *indep = (double *) malloc((SL->num_v) * sizeof(double));
+}
 
-  double *indep = (double *) malloc((e->num_v) * sizeof(double));
-  for(int i = 0; i < (e->num_v); i++){
-    indep[i] = matrix_diag[e->num_v - 1][i];
+double ** Newton_Inexato(SistLinear_t *SL)
+{
+  double ** m_res = (double**) calloc(2*SL->max_iter+1, sizeof(double*));
+  for(int i = 0; i < 2*SL->max_iter+1; i++)
+  { 
+    m_res[i] = (double*) calloc(SL->num_v, sizeof(double));
   }
-  e->b = indep;
 
-}
+  m_res[0] = SL->Xgs;
 
-void Newton_Inexato(SistLinear_t *e){
-
-  // usar libmatheval para gerar vetores com os valor de 0 até n para cada equação
-  int i, j, k;
-  double **matriz, linha[e->num_v], func;
-
-  for(int i = 0; i < e->num_v; i++)
+  for (int i = 0; i < SL->max_iter; i++)
   {
-    linha[i] = 0.0;
-  }
+    double aux = 0.0;
 
-  matriz = malloc ((e->num_v) * sizeof (double*)); //aloca espaco para matrix_diag com valores da diagonal 
-  for (i=0; i < (e->num_v); i++){
-    matriz[i] = malloc ((e->num_v) * sizeof (double));
-  }
-
-  for(i=0; i < e->num_v ; i++){
-    for(j=0; j<e->num_v; j++){
-      func = evaluator_evaluate_x(e->HESSIANA, j);
-      linha[j] = func;
-    }
-
-    for(k=0; k<e->num_v; k++){
-      matriz[i][k] = linha[k];
-    }
-  }
-
-  calcula_independentes(e, matriz); //Calcula termos independentes
-  gaussSeidel(e, matriz);
+    double * grad = calc_grad(SL, SL->Xgs);
+    
+    double ** m_aux = calc_hes(SL, SL->Xgs);
   
-  for (i=0; i < (e->num_v); i++){
-    free(matriz[i]);
+    for (int i = 0; i < SL->num_v; i++)
+    {
+      if(aux <= fabs(grad[i]))
+      {
+        aux = grad[i];
+      }
+    }
+  
+    if(fabs(aux) < SL->epsilon)
+      return m_res;
+    double * delta = (double*) calloc(SL->num_v, sizeof(double));
+
+    //calcula_independentes(e, matriz); //Calcula termos independentes
+    //gaussSeidel(e, matriz);
+
+    delta = gaussSeidel(SL, delta, m_aux, grad);
+
+    for (int l = 0; l < SL->num_v; l++)
+    {
+      SL->Xgs[l] += delta[l];
+    }
+
+    aux = 0.0;
+
+    for (int i = 0; i < SL->num_v-1; i++)
+    {
+      if(aux <= delta[i])
+      {
+        aux = delta[i];
+      }
+    }
+
+    m_res[i+1] = SL->Xgs;
+
+    if(fabs(aux) < SL->epsilon)
+      return m_res;
   }
-  free(matriz);
-
-  free(e->Xgs);
-
-  free(e->b);
-} 
+  return m_res;*/
+}
