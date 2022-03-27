@@ -7,7 +7,7 @@ void pivotLU(SistLinear_t *SL, int i, double**hes, double * grad);
 
 void pivotz(SistLinear_t *SL, int i);
 
-void retrossubpz(SistLinear_t *SL);
+void retrossubpz(SistLinear_t *SL, double * grad);
 
 void retrossubs2(SistLinear_t *SL, double**hes, double *delta);
 

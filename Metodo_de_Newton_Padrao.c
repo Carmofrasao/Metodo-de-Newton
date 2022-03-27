@@ -81,7 +81,7 @@ double * calc_grad(SistLinear_t *SL, double * X)
     }
     for(int l = 0; l < SL->num_v; l++)
     {
-      res[l] = evaluator_evaluate(SL->GRADIENTE[l], SL->num_v, Xs, X);
+      res[l] = -evaluator_evaluate(SL->GRADIENTE[l], SL->num_v, Xs, X);
     }
   }
   return res;
