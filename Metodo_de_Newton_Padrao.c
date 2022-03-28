@@ -5,6 +5,7 @@
 #include <matheval.h>
 
 #include "Metodo_de_Newton_Padrao.h"
+#include "Metodo_de_Newton_Inexato.h"
 #include "SistLinear.h"
 
 void pivot(SistLinear_t *SL, double**hes, double * grad, int i) {
@@ -63,7 +64,7 @@ double* eliminacaoGauss(SistLinear_t *SL, double *delta, double**hes, double * g
 
 double * calc_grad(SistLinear_t *SL, double * X)
 {
-  double * res = (double*)malloc(SL->num_v*sizeof(double));
+  double *res = (double*)malloc(SL->num_v*sizeof(double));
 
   char aux[4];
   

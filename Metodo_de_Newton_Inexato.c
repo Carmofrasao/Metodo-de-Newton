@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "Metodo_de_Newton_Inexato.h"
+#include "Metodo_de_Newton_Padrao.h"
 #include <string.h>
 #include <math.h>
 #include <matheval.h>
@@ -14,69 +15,63 @@
 
 //função para "limpar" string
 void clean_fgets(char *pos) { 
-  //strtok(pos, "\n");
+  strtok(pos, "\n");
 }
 
 // Gauss-Seidel 
-double * gaussSeidel(SistLinear_t *SL, double *delta, double **m_aux, double *grad){
-/*  int i,j,q;
-  unsigned int n = e->num_v;
-  double *r =  malloc((e->num_v) * sizeof (double)) ;
-  double temp,sum,erroMaximo,erroCalculado;
-  double **A = matriz;
-  double *b = e->b;
-  double *x = malloc((e->num_v) * sizeof(double));
+double * gaussSeidel(SistLinear_t *SL, double **m_aux, double *grad)
+{
+  double *res = (double*) calloc(SL->num_v, sizeof(double));
+  double *prox_res = (double*) calloc(SL->num_v, sizeof(double));
+  int i = 0;
+  double num_maior = 0.0;
+  double sub = 0.0;
 
-  // A[n][n] = Matriz principal (e->f)
-  // b[n] = vetor_independente (e->termos_independentes)
-
-  for(i=0;i<n;i++){
-      r[i] = 0;
-  }
-  
-  q = 1;
   do{
-      erroCalculado = 0;
-      q++;
-      for(i=0;i<n;i++){
-          sum = 0;
-          for(j=0;j<n;j++){
-              if(i != j){
-                  sum = sum + (A[i][j] * r[j]);
-              }
-          }
-          temp = (-1.0 / A[i][i]) * sum + b[i] / A[i][i];
-          erroMaximo = fabs(temp - r[i]);
-          r[i] = temp;
-          if(erroMaximo > erroCalculado){
-              erroCalculado = erroMaximo;
-          }
+    prox_res = calcula_independentes(SL, m_aux, grad, res);
+    for(int j = 0; j < SL->num_v; j++){
+      sub = prox_res[j] - res[j];
+      if(sub >= num_maior){
+        num_maior = sub;
       }
-  }while(erroCalculado >= e->epsilon && q<=e->max_iter);
+    }
+    res = prox_res;
+    i++;
+  }while((i <= 50) && (num_maior < SL->epsilon));
 
-  for(i=0;i<n;i++){ //copiar dados calculados para *x
-    x[i] = r[i];
-  }
-
-  e->Xgs = x; //copiar dados para estrutura
-
-  free(r);*/
+  return res;
 }
 
-double * calcula_independentes(SistLinear_t *SL, double **m_aux, double *grad)
-{/*
-  double *indep = (double *) malloc((SL->num_v) * sizeof(double));
+
+
+double * calcula_independentes(SistLinear_t *SL, double **m_aux, double *grad, double * res)
+{
+  double result = 0.0;
+  double *indep = res;
+
+  for(int i = 0; i < SL->num_v; i++){
+    for(int j = 0; j < SL->num_v; j++){
+      result += m_aux[i][j] * indep[j];
+    }
+    result -= m_aux[i][i] * indep[i];
+    result = grad[i] - result;
+    result = result / m_aux[i][i];
+    indep[i] = result;
+    result = 0.0;
+  }
+  return indep;
 }
 
 double ** Newton_Inexato(SistLinear_t *SL)
 {
-  double ** m_res = (double**) calloc(2*SL->max_iter+1, sizeof(double*));
-  for(int i = 0; i < 2*SL->max_iter+1; i++)
+  double ** m_res = (double**) calloc(SL->max_iter+1, sizeof(double*));
+  for(int i = 0; i < SL->max_iter+1; i++)
   { 
     m_res[i] = (double*) calloc(SL->num_v, sizeof(double));
   }
 
-  m_res[0] = SL->Xgs;
+  for(int z = 0; z < SL->num_v; z++)
+    m_res[0][z] = SL->Xgs[z];
 
   for (int i = 0; i < SL->max_iter; i++)
   {
@@ -88,20 +83,15 @@ double ** Newton_Inexato(SistLinear_t *SL)
   
     for (int i = 0; i < SL->num_v; i++)
     {
-      if(aux <= fabs(grad[i]))
-      {
-        aux = grad[i];
-      }
+      aux += grad[i]*grad[i];
     }
-  
-    if(fabs(aux) < SL->epsilon)
+    aux = sqrt(aux);
+
+    if(aux < SL->epsilon)
       return m_res;
     double * delta = (double*) calloc(SL->num_v, sizeof(double));
-
-    //calcula_independentes(e, matriz); //Calcula termos independentes
-    //gaussSeidel(e, matriz);
-
-    delta = gaussSeidel(SL, delta, m_aux, grad);
+      
+    delta = gaussSeidel(SL, m_aux, grad);
 
     for (int l = 0; l < SL->num_v; l++)
     {
@@ -110,18 +100,17 @@ double ** Newton_Inexato(SistLinear_t *SL)
 
     aux = 0.0;
 
-    for (int i = 0; i < SL->num_v-1; i++)
+    for (int i = 0; i < SL->num_v; i++)
     {
-      if(aux <= delta[i])
-      {
-        aux = delta[i];
-      }
+      aux += delta[i]*delta[i];
     }
+    aux = sqrt(aux);
 
-    m_res[i+1] = SL->Xgs;
+    for(int z = 0; z < SL->num_v; z++)
+      m_res[i+1][z] = SL->Xgs[z];
 
-    if(fabs(aux) < SL->epsilon)
+    if(aux < SL->epsilon)
       return m_res;
   }
-  return m_res;*/
+  return m_res;
 }
