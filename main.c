@@ -134,42 +134,47 @@ int main (){
     printf("%d\n", SL->num_v);
     printf("%s\n", SL->eq_aux);
     printf("#Iteração \t| Newton Padrão \t| Newton Modificado \t| Newton Inexato\n");
-
+    double final[3];
     // para cada iteração
     for (int i = 0; i <= SL->max_iter; i++) {
       printf("%d \t\t| ", i); // imprime iteração
-      double final = evaluator_evaluate (f_aux, SL->num_v, X, m_reseg[i]);
-      if (final != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
-        if (isnan(final) || isinf(final))
-          printf("%1.14e\t\t\t| ", final);
+      final[0] = evaluator_evaluate (f_aux, SL->num_v, X, m_reseg[i]);
+      if (final[0] != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
+        if (isnan(final[0]) || isinf(final[0]))
+          printf("\t\t\t| ");
         else
-          printf("%1.14e\t| ", final);
+          printf("%1.14e\t| ", final[0]);
+      }
+      else
+        printf("\t\t\t| ");
+
+      final[1] = evaluator_evaluate (f_aux, SL->num_v, X, m_reslu[i]);
+      if (final[1] != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
+        if (isnan(final[1]) || isinf(final[1]))
+          printf("\t\t\t| ");
+        else
+          printf("%1.14e\t| ", final[1]);
       }
       else
         printf("\t\t\t| ");
 
 
-      final = evaluator_evaluate (f_aux, SL->num_v, X, m_reslu[i]);
-      if (final != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
-        if (isnan(final) || isinf(final))
-          printf("%1.14e\t\t\t| ", final);
+      final[2] = evaluator_evaluate (f_aux, SL->num_v, X, m_resgs[i]);
+      if (final[2] != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
+        if (isnan(final[2]) || isinf(final[2]))
+          printf("\t\t\t ");
         else
-          printf("%1.14e\t| ", final);
-      }
-      else
-        printf("\t\t\t| ");
-
-
-      final = evaluator_evaluate (f_aux, SL->num_v, X, m_resgs[i]);
-      if (final != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
-        if (isnan(final) || isinf(final))
-          printf("%1.14e\t\t\t ", final);
-        else
-          printf("%1.14e\t ", final);
+          printf("%1.14e\t ", final[2]);
       }
       else
         printf("\t\t\t ");
       printf("\n");
+
+      if(fabs(m_reseg[i]-m_reseg[i-1])<SL->epsilon && fabs(m_reslu[i]-m_reslu[i-1])<SL->epsilon && fabs(m_resgs[i]-m_resgs[i-1]<SL->epsilon))
+        break;
+
+      if((isnan(final[0]) || isinf(final[0]) || final[0]  == 0) && (isnan(final[1]) || isinf(final[1]) || final[1]  == 0) && (isnan(final[2]) || isinf(final[2]) || final[2]  == 0))
+        break;
     }
 
     // imprimir os tempos

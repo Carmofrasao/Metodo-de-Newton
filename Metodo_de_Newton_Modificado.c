@@ -139,7 +139,7 @@ double ** Newton_Modificado(SistLinear_t *SL)
 
     for (int i = 0; i < SL->num_v; i++)
     {
-      aux = delta[i]*delta[i];
+      aux += delta[i]*delta[i];
     }
     aux = sqrt(aux);
 
