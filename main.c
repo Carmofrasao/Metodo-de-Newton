@@ -37,7 +37,7 @@ int main (){
     double ** m_reseg = (double**) calloc(SL->max_iter+1, sizeof(double*));
     for(int i = 0; i < SL->max_iter+1; i++)
     { 
-      m_reseg[i] = (double*) calloc(SL->num_v+1, sizeof(double));
+      m_reseg[i] = (double*) calloc(SL->num_v, sizeof(double));
     }
 
     double ** m_reslu = (double**) calloc(SL->max_iter+1, sizeof(double*));
@@ -135,13 +135,16 @@ int main (){
     printf("%s\n", SL->eq_aux);
     printf("#Iteração \t| Newton Padrão \t| Newton Modificado \t| Newton Inexato\n");
     double final[3];
+    final[0] = NAN;
+    final[1] = NAN;
+    final[2] = NAN;
     // para cada iteração
     for (int i = 0; i <= SL->max_iter; i++) {
       printf("%d \t\t| ", i); // imprime iteração
       final[0] = evaluator_evaluate (f_aux, SL->num_v, X, m_reseg[i]);
       if (final[0] != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
         if (isnan(final[0]) || isinf(final[0]))
-          printf("\t\t\t| ");
+          printf("%1.14e\t\t\t| ", final[0]);
         else
           printf("%1.14e\t| ", final[0]);
       }
@@ -151,7 +154,7 @@ int main (){
       final[1] = evaluator_evaluate (f_aux, SL->num_v, X, m_reslu[i]);
       if (final[1] != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
         if (isnan(final[1]) || isinf(final[1]))
-          printf("\t\t\t| ");
+          printf("%1.14e\t\t\t| ", final[1]);
         else
           printf("%1.14e\t| ", final[1]);
       }
@@ -162,19 +165,13 @@ int main (){
       final[2] = evaluator_evaluate (f_aux, SL->num_v, X, m_resgs[i]);
       if (final[2] != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
         if (isnan(final[2]) || isinf(final[2]))
-          printf("\t\t\t ");
+          printf("%1.14e\t\t\t ", final[2]);
         else
           printf("%1.14e\t ", final[2]);
       }
       else
         printf("\t\t\t ");
       printf("\n");
-
-      if(fabs(m_reseg[i]-m_reseg[i-1])<SL->epsilon && fabs(m_reslu[i]-m_reslu[i-1])<SL->epsilon && fabs(m_resgs[i]-m_resgs[i-1]<SL->epsilon))
-        break;
-
-      if((isnan(final[0]) || isinf(final[0]) || final[0]  == 0) && (isnan(final[1]) || isinf(final[1]) || final[1]  == 0) && (isnan(final[2]) || isinf(final[2]) || final[2]  == 0))
-        break;
     }
 
     // imprimir os tempos
