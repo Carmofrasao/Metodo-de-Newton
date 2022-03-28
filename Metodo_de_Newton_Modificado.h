@@ -15,6 +15,6 @@ void triangLU(SistLinear_t *SL, double**hes, double * grad);
 
 double * FatLU(SistLinear_t *SL, double *delta, double**hes, double * grad);
 
-double ** Newton_Modificado(SistLinear_t *SL);
+double ** Newton_Modificado(SistLinear_t *SL, double *TderivadasLU, double *TslLU);
 
 #endif

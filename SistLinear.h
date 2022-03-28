@@ -2,12 +2,10 @@
 #define __SIST_LINEAR__
 
 #include "utils.h"
+#include <assert.h>
 
 typedef struct {
   unsigned int num_v;   // numero de variaveis
-  double *M;            // vetor nxn de posições da matriz
-  double **A;           // matriz dos coeficientes do SL (vetor de ponteiros para posições de M)
-  double *b;            // termos independentes do SL
 
   double **L;           // matriz dos multiplicadores (LESS)
   double **U;           // matriz dos multiplicadores (UPER)
@@ -24,12 +22,19 @@ typedef struct {
 
 } SistLinear_t;
 
+void cria_hes(SistLinear_t *SL);
+
+void cria_grad(SistLinear_t *SL);
+
+void clean_fgets(char *pos);
+
+double * calc_grad(SistLinear_t *SL, double * X, double *tempo);
+
+double ** calc_hes(SistLinear_t *SL, double * X, double *tempo);
+
 SistLinear_t *alocaSistLinear(unsigned int n);
 
 void liberaSistLinear(SistLinear_t *SL);
-
-// devolve um outro Sistema Linear que é uma cópia do SL
-SistLinear_t *dupSL(SistLinear_t *SL);
 
 SistLinear_t *lerSistLinear();
 

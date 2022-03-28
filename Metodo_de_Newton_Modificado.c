@@ -4,7 +4,6 @@
 
 #include "SistLinear.h"
 #include "Metodo_de_Newton_Modificado.h"
-#include "Metodo_de_Newton_Padrao.h"
 
 void pivotLU(SistLinear_t *SL, int i, double**hes, double * grad) {
   double max = fabs(hes[i][i]);
@@ -62,6 +61,8 @@ void retrossubs2(SistLinear_t *SL, double**hes, double *delta) {
     for (int j = i+1; j < SL->num_v; j++)
       delta[i] -= hes[i][j] * delta[j];
     delta[i] /= hes[i][i];
+    if (isnan(hes[i][i]))
+      printf("ERRO: %g\n", hes[i][i]);
   }
 }
 
@@ -95,59 +96,79 @@ double * FatLU(SistLinear_t *SL, double *delta, double**hes, double * grad) {
   return delta;
 }
 
-double ** Newton_Modificado(SistLinear_t *SL)
+double ** Newton_Modificado(SistLinear_t *SL, double *TderivadasLU, double *TslLU)
 {
   double ** m_res = (double**) calloc(SL->max_iter+1, sizeof(double*));
-  for(int i = 0; i < SL->max_iter+1; i++)
-  { 
-    m_res[i] = (double*) calloc(SL->num_v, sizeof(double));
+  if (!(m_res)){
+    free(SL);
+    printf("ERRO");
+    return NULL;
   }
-
+  for(int i = 0; i < SL->max_iter+1; i++)
+  {
+    m_res[i] = (double*) calloc(SL->num_v, sizeof(double));
+    if (!(m_res[i])){
+      free(SL);
+      printf("ERRO");
+      return NULL;
+    }
+  }
   for(int z = 0; z < SL->num_v; z++)
     m_res[0][z] = SL->Xlu[z];
 
-  double ** m_aux = calc_hes(SL, SL->Xlu);
+  double ** m_aux;
 
   for (int i = 0; i < SL->max_iter; i++)
   {
     double aux = 0.0;
 
-    double * grad = calc_grad(SL, SL->Xlu);
+    double * grad = calc_grad(SL, SL->Xlu, TderivadasLU);
 
-    if(i % SL->num_v == 0){
-      m_aux = calc_hes(SL, SL->Xlu);
-    }  
+    if(i % SL->num_v == 0)
+      m_aux = calc_hes(SL, SL->Xlu, TderivadasLU);
   
     for (int i = 0; i < SL->num_v; i++)
-    {
       aux += grad[i]*grad[i];
-    }
     aux = sqrt(aux);
 
     if(aux < SL->epsilon)
+    {
+      for (int l = i+1; l < SL->max_iter+1; l++)
+        for(int z = 0; z < SL->num_v; z++)
+          m_res[l][z] = NAN;
       return m_res;
-    double * delta = (double*) calloc(SL->num_v, sizeof(double));
+    }
 
+    double * delta = (double*) calloc(SL->num_v, sizeof(double));
+    if (!(delta)){
+      free(SL);
+      printf("ERRO");
+      return NULL;
+    }
+
+    double tTotal = timestamp();
     delta = FatLU(SL, delta, m_aux, grad);
+    *TslLU += timestamp() - tTotal;
 
     for (int l = 0; l < SL->num_v; l++)
-    {
       SL->Xlu[l] += delta[l];
-    }
 
     aux = 0.0;
 
     for (int i = 0; i < SL->num_v; i++)
-    {
       aux += delta[i]*delta[i];
-    }
     aux = sqrt(aux);
 
     for(int z = 0; z < SL->num_v; z++)
       m_res[i+1][z] = SL->Xlu[z];
 
     if(aux < SL->epsilon)
+    {
+      for (int l = i+1; l < SL->max_iter; l++)
+        for(int z = 0; z < SL->num_v; z++)
+          m_res[l+1][z] = NAN;
       return m_res;
+    }
   }
   return m_res;
 }

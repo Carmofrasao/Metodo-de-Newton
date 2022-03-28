@@ -1,11 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <string.h>
-#include <matheval.h>
 
 #include "Metodo_de_Newton_Padrao.h"
-#include "Metodo_de_Newton_Inexato.h"
 #include "SistLinear.h"
 
 void pivot(SistLinear_t *SL, double**hes, double * grad, int i) {
@@ -62,68 +59,22 @@ double* eliminacaoGauss(SistLinear_t *SL, double *delta, double**hes, double * g
     return delta;
 }
 
-double * calc_grad(SistLinear_t *SL, double * X)
-{
-  double *res = (double*)malloc(SL->num_v*sizeof(double));
-
-  char aux[4];
-  
-  char **Xs = (char**) malloc(SL->num_v*sizeof(char*));
-
-  for(int i = 0; i < SL->max_iter; i++)
-  {
-    for(int l = 0; l < SL->num_v; l++)
-    {
-      char* Xn = (char*) malloc(4*sizeof(char));
-      memset(aux, 0, sizeof(aux));
-      sprintf(aux, "%d", l+1);
-      strcat(strcpy(Xn, "x"), aux);
-      Xs[l] = Xn;
-    }
-    for(int l = 0; l < SL->num_v; l++)
-    {
-      res[l] = -evaluator_evaluate(SL->GRADIENTE[l], SL->num_v, Xs, X);
-    }
-  }
-  return res;
-}
-
-double ** calc_hes(SistLinear_t *SL, double * X)
-{
-  double ** m_aux = (double**)calloc(SL->num_v, sizeof(double*));
-  for(int i = 0; i < SL->num_v; i++)
-  {
-    m_aux[i] = (double*)calloc(SL->num_v, sizeof(double));
-  }
-  char aux[4];
-  
-  char **Xs = (char**) calloc(SL->num_v, sizeof(char*));
-
-  for(int l = 0; l < SL->num_v; l++)
-  {
-    char* Xn = (char*) malloc(4*sizeof(char));
-    memset(aux, 0, sizeof(aux));
-    sprintf(aux, "%d", l+1);
-    strcat(strcpy(Xn, "x"), aux);
-    Xs[l] = Xn;
-  }
-
-  for (int i = 0; i < SL->num_v; i++)
-  {
-    for(int l = 0; l < SL->num_v; l++)
-    {
-      m_aux[i][l] = evaluator_evaluate(SL->HESSIANA[i][l], SL->num_v, Xs, X);
-    }
-  }
-  return m_aux;
-}
-
-double ** Newton_Padrao(SistLinear_t *SL)
+double ** Newton_Padrao(SistLinear_t *SL, double *TderivadasEG, double *TslEG)
 {
   double ** m_res = (double**) calloc(SL->max_iter+1, sizeof(double*));
+  if (!(m_res)){
+    free(SL);
+    printf("ERRO");
+    return NULL;
+  }
   for(int i = 0; i < SL->max_iter+1; i++)
   { 
     m_res[i] = (double*) calloc(SL->num_v, sizeof(double));
+    if (!(m_res[i])){
+      free(SL);
+      printf("ERRO");
+      return NULL;
+    }
   }
 
   for(int z = 0; z < SL->num_v; z++)
@@ -132,41 +83,51 @@ double ** Newton_Padrao(SistLinear_t *SL)
   for (int i = 0; i < SL->max_iter; i++)
   {
     double aux = 0.0;
-
-    double * grad = calc_grad(SL, SL->Xeg);
-    
-    double ** m_aux = calc_hes(SL, SL->Xeg);
+    double * grad = calc_grad(SL, SL->Xeg, TderivadasEG);
+    double ** m_aux = calc_hes(SL, SL->Xeg, TderivadasEG);
   
     for (int i = 0; i < SL->num_v; i++)
-    {
       aux += grad[i]*grad[i];
-    }
     aux = sqrt(aux);
 
     if(aux < SL->epsilon)
+    {
+      for (int l = i+1; l < SL->max_iter+1; l++)
+        for(int z = 0; z < SL->num_v; z++)
+          m_res[l][z] = NAN;
       return m_res;
+    }
+    
     double * delta = (double*) calloc(SL->num_v, sizeof(double));
+    if (!(delta)){
+      free(SL);
+      printf("ERRO");
+      return NULL;
+    }
 
+    double tTotal = timestamp();
     delta = eliminacaoGauss(SL, delta, m_aux, grad);
+    *TslEG += timestamp() - tTotal;
 
     for (int l = 0; l < SL->num_v; l++)
-    {
       SL->Xeg[l] += delta[l];
-    }
 
     aux = 0.0;
 
     for (int i = 0; i < SL->num_v; i++)
-    {
       aux += delta[i]*delta[i];
-    }
     aux = sqrt(aux);
 
     for(int z = 0; z < SL->num_v; z++)
       m_res[i+1][z] = SL->Xeg[z];
 
     if(aux < SL->epsilon)
+    {
+      for (int l = i+1; l < SL->max_iter; l++)
+        for(int z = 0; z < SL->num_v; z++)
+          m_res[l+1][z] = NAN;
       return m_res;
+    }
   }
   return m_res;
 }

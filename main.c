@@ -35,65 +35,63 @@ int main (){
   while (SL = lerSistLinear())
   {
     double ** m_reseg = (double**) calloc(SL->max_iter+1, sizeof(double*));
+    if (!(m_reseg)){
+      free(SL);
+      printf("ERRO");
+      return 0;
+    }
     for(int i = 0; i < SL->max_iter+1; i++)
     { 
       m_reseg[i] = (double*) calloc(SL->num_v, sizeof(double));
-    }
-
-    double ** m_reslu = (double**) calloc(SL->max_iter+1, sizeof(double*));
-    for(int i = 0; i < SL->max_iter+1; i++)
-    { 
-      m_reslu[i] = (double*) calloc(SL->num_v, sizeof(double));
-    }
-
-    double ** m_resgs = (double**) calloc(SL->max_iter+1, sizeof(double*));
-    for(int i = 0; i < SL->max_iter+1; i++)
-    { 
-      m_resgs[i] = (double*) calloc(SL->num_v, sizeof(double));
-    }
-
-    //criando matriz hessiana
-    clean_fgets(SL->eq_aux);
-    for(int n = 0; n < SL->num_v; n++)
-    {
-      for(int l = 0; l < SL->num_v; l++)
-      {
-        memset(Xn, 0, sizeof(Xn));
-        memset(aux, 0, sizeof(aux));
-        SL->HESSIANA[n][l] = evaluator_create(SL->eq_aux);
-        assert(SL->HESSIANA[n][l]);
-        sprintf(aux, "%d", n+1);
-        strcat(strcpy(Xn, "x"), aux); 
-        SL->HESSIANA[n][l] = evaluator_derivative (SL->HESSIANA[n][l], Xn);
-        assert(SL->HESSIANA[n][l]);
-        memset(Xn, 0, sizeof(Xn));
-        memset(aux, 0, sizeof(aux));
-        sprintf(aux, "%d", l+1);
-        strcat(strcpy(Xn, "x"), aux); 
-        SL->HESSIANA[n][l] = evaluator_derivative (SL->HESSIANA[n][l], Xn);
-        assert(SL->HESSIANA[n][l]);
+      if (!(m_reseg[i])){
+        free(SL);
+        printf("ERRO");
+        return 0;
       }
     }
 
-    //criando vetor gradiente
-    for(int l = 0; l < SL->num_v; l++)
-    {
-      memset(Xn, 0, sizeof(Xn));
-      memset(aux, 0, sizeof(aux));
-      SL->GRADIENTE[l] = evaluator_create(SL->eq_aux);
-      assert(SL->GRADIENTE[l]);
-      sprintf(aux, "%d", l+1);
-      strcat(strcpy(Xn, "x"), aux); 
-      SL->GRADIENTE[l] = evaluator_derivative (SL->GRADIENTE[l], Xn);
-      assert(SL->GRADIENTE[l]);
+    double ** m_reslu = (double**) calloc(SL->max_iter+1, sizeof(double*));
+    if (!(m_reslu)){
+      free(SL);
+      printf("ERRO");
+      return 0;
     }
+    for(int i = 0; i < SL->max_iter+1; i++)
+    { 
+      m_reslu[i] = (double*) calloc(SL->num_v, sizeof(double));
+      if (!(m_reslu[i])){
+        free(SL);
+        printf("ERRO");
+        return 0;
+      }
+    }
+
+    double ** m_resgs = (double**) calloc(SL->max_iter+1, sizeof(double*));
+    if (!(m_resgs)){
+      free(SL);
+      printf("ERRO");
+      return 0;
+    }
+    for(int i = 0; i < SL->max_iter+1; i++)
+    { 
+      m_resgs[i] = (double*) calloc(SL->num_v, sizeof(double));
+      if (!(m_resgs[i])){
+        free(SL);
+        printf("ERRO");
+        return 0;
+      }
+    }
+
+    cria_hes(SL);
+
+    cria_grad(SL);
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     //Newton Padrão
 
     double tTotal = timestamp();
-    m_reseg = Newton_Padrao(SL);
+    m_reseg = Newton_Padrao(SL, &TderivadasEG, &TslEG);
     TtotalEG = timestamp() - tTotal;
     
     
@@ -102,7 +100,7 @@ int main (){
     //Metodo de Newton Modificado
 
     tTotal = timestamp();
-    m_reslu = Newton_Modificado(SL);
+    m_reslu = Newton_Modificado(SL, &TderivadasLU, &TslLU);
     TtotalLU = timestamp() - tTotal;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +108,7 @@ int main (){
     //Metodo de Newton Inexato
 
     tTotal = timestamp();
-    m_resgs = Newton_Inexato(SL);
+    m_resgs = Newton_Inexato(SL, &TderivadasGS, &TslGS);
     TtotalGS = timestamp() - tTotal;
   
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,7 +122,12 @@ int main (){
 
     for (int i = 0; i < SL->num_v; i++)
     {
-      char* Xi = (char*) malloc(4*sizeof(char));
+      char* Xi = (char*) malloc(5*sizeof(char));
+      if (!(Xi)){
+        free(SL);
+        printf("ERRO");
+        return 0;
+      }
       sprintf(aux, "%d", i+1);
       strcat(strcpy(Xi, "x"), aux);
       X[i] = Xi;
@@ -135,26 +138,32 @@ int main (){
     printf("%s\n", SL->eq_aux);
     printf("#Iteração \t| Newton Padrão \t| Newton Modificado \t| Newton Inexato\n");
     double final[3];
-    final[0] = NAN;
-    final[1] = NAN;
-    final[2] = NAN;
     // para cada iteração
     for (int i = 0; i <= SL->max_iter; i++) {
-      printf("%d \t\t| ", i); // imprime iteração
+      final[0] = NAN;
+      final[1] = NAN;
+      final[2] = NAN;
       final[0] = evaluator_evaluate (f_aux, SL->num_v, X, m_reseg[i]);
+      final[1] = evaluator_evaluate (f_aux, SL->num_v, X, m_reslu[i]);
+      final[2] = evaluator_evaluate (f_aux, SL->num_v, X, m_resgs[i]);
+      if (isnan(final[0]) && isnan(final[1]) && isnan(final[2]))
+        break;
+      
+      printf("%d \t\t| ", i); // imprime iteração
+      
       if (final[0] != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
         if (isnan(final[0]) || isinf(final[0]))
-          printf("%1.14e\t\t\t| ", final[0]);
+          printf("\t\t\t| ");
         else
           printf("%1.14e\t| ", final[0]);
       }
       else
         printf("\t\t\t| ");
 
-      final[1] = evaluator_evaluate (f_aux, SL->num_v, X, m_reslu[i]);
+      
       if (final[1] != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
         if (isnan(final[1]) || isinf(final[1]))
-          printf("%1.14e\t\t\t| ", final[1]);
+          printf("\t\t\t| ");
         else
           printf("%1.14e\t| ", final[1]);
       }
@@ -162,10 +171,10 @@ int main (){
         printf("\t\t\t| ");
 
 
-      final[2] = evaluator_evaluate (f_aux, SL->num_v, X, m_resgs[i]);
+      
       if (final[2] != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
         if (isnan(final[2]) || isinf(final[2]))
-          printf("%1.14e\t\t\t ", final[2]);
+          printf("\t\t\t ");
         else
           printf("%1.14e\t ", final[2]);
       }
@@ -178,10 +187,11 @@ int main (){
     printf("Tempo total \t| %1.14e\t| %1.14e\t| %1.14e\n", TtotalEG, TtotalLU, TtotalGS);
     printf("Tempo derivadas | %1.14e\t| %1.14e\t| %1.14e\n", TderivadasEG, TderivadasLU, TderivadasGS);
     printf("Tempo SL \t| %1.14e\t| %1.14e\t| %1.14e\n", TslEG, TslLU, TslGS);
+    printf("#\n");
     
     ++i;
     printf("\n");
   }
-  //liberaSistLinear(SL);
+  liberaSistLinear(SL);
   evaluator_destroy(f_aux);
 }

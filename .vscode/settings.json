@@ -4,6 +4,7 @@
         "stdio.h": "c",
         "sistlinear.h": "c",
         "stdlib.h": "c",
-        "math.h": "c"
+        "math.h": "c",
+        "metodo_de_newton_padrao.h": "c"
     }
 }
