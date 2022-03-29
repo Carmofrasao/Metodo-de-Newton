@@ -92,6 +92,10 @@ double ** Newton_Padrao(SistLinear_t *SL, double *TderivadasEG, double *TslEG)
 
     if(aux < SL->epsilon)
     {
+      free(grad);
+      for (int i = 0; i < SL->num_v; i++)
+        free(m_aux[i]);
+      free(m_aux);
       for (int l = i+1; l < SL->max_iter+1; l++)
         for(int z = 0; z < SL->num_v; z++)
           m_res[l][z] = NAN;
@@ -121,13 +125,24 @@ double ** Newton_Padrao(SistLinear_t *SL, double *TderivadasEG, double *TslEG)
     for(int z = 0; z < SL->num_v; z++)
       m_res[i+1][z] = SL->Xeg[z];
 
+    
+    free(delta);
+
     if(aux < SL->epsilon)
     {
+      free(grad);
+      for (int i = 0; i < SL->num_v; i++)
+        free(m_aux[i]);
+      free(m_aux);
       for (int l = i+1; l < SL->max_iter; l++)
         for(int z = 0; z < SL->num_v; z++)
           m_res[l+1][z] = NAN;
       return m_res;
     }
+    free(grad);
+    for (int i = 0; i < SL->num_v; i++)
+      free(m_aux[i]);
+    free(m_aux);
   }
   return m_res;
 }

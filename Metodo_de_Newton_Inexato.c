@@ -14,12 +14,7 @@ double * gaussSeidel(SistLinear_t *SL, double **m_aux, double *grad)
     printf("ERRO");
     return NULL;
   }
-  double *prox_res = (double*) calloc(SL->num_v, sizeof(double));
-  if (!(prox_res)){
-    free(SL);
-    printf("ERRO");
-    return NULL;
-  }
+  double *prox_res;
 
   int i = 0;
   double num_maior = 0.0;
@@ -33,7 +28,8 @@ double * gaussSeidel(SistLinear_t *SL, double **m_aux, double *grad)
         num_maior = sub;
       }
     }
-    res = prox_res;
+    res = prox_res;  
+    
     i++;
   }while((i <= 50) && (num_maior < SL->epsilon));
 
@@ -93,18 +89,17 @@ double ** Newton_Inexato(SistLinear_t *SL, double *TderivadasGS, double * TlsGS)
 
     if(aux < SL->epsilon)
     {
+      free(grad);
+      for (int i = 0; i < SL->num_v; i++)
+        free(m_aux[i]);
+      free(m_aux);
       for (int l = i+1; l < SL->max_iter+1; l++)
         for(int z = 0; z < SL->num_v; z++)
           m_res[l][z] = NAN;
       return m_res;
     }
     
-    double * delta = (double*) calloc(SL->num_v, sizeof(double));
-    if (!(delta)){
-      free(SL);
-      printf("ERRO");
-      return NULL;
-    }
+    double * delta;
     
     double tTotal = timestamp();
     delta = gaussSeidel(SL, m_aux, grad);
@@ -122,13 +117,23 @@ double ** Newton_Inexato(SistLinear_t *SL, double *TderivadasGS, double * TlsGS)
     for(int z = 0; z < SL->num_v; z++)
       m_res[i+1][z] = SL->Xgs[z];
 
+    free(delta);
+
     if(aux < SL->epsilon)
     {
+      free(grad);
+      for (int i = 0; i < SL->num_v; i++)
+        free(m_aux[i]);
+      free(m_aux);
       for (int l = i+1; l < SL->max_iter; l++)
         for(int z = 0; z < SL->num_v; z++)
           m_res[l+1][z] = NAN;
       return m_res;
     }
+    free(grad);
+    for (int i = 0; i < SL->num_v; i++)
+      free(m_aux[i]);
+    free(m_aux);
   }
   return m_res;
 }

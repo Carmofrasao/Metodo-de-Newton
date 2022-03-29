@@ -12,7 +12,7 @@ typedef struct {
   double *z;            // vetor z para Fatoração LU
 
   char *eq_aux;         //strings com equacao auxiliar pra montagem da matriz
-  void ***HESSIANA;     //matriz de strings com as expressoes
+  void ***HESSIANA;     //matriz de derivadas
   void **GRADIENTE;     //vetor de gradientes
   double epsilon;       //tolerancia no metodo de gauss seidel
   int max_iter;         //numero maximo de iterações

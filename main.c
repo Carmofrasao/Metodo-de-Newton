@@ -14,11 +14,8 @@
 
 int main (){
   SistLinear_t *SL;
-  
-  int i = 1;
   char aux[4];
   char Xn[4];
-  void * f_aux;
 
   double TtotalEG, TtotalLU, TtotalGS, TderivadasEG, TderivadasLU, TderivadasGS, TslEG, TslLU, TslGS;
 
@@ -34,53 +31,10 @@ int main (){
   
   while (SL = lerSistLinear())
   {
-    double ** m_reseg = (double**) calloc(SL->max_iter+1, sizeof(double*));
-    if (!(m_reseg)){
-      free(SL);
-      printf("ERRO");
-      return 0;
-    }
-    for(int i = 0; i < SL->max_iter+1; i++)
-    { 
-      m_reseg[i] = (double*) calloc(SL->num_v, sizeof(double));
-      if (!(m_reseg[i])){
-        free(SL);
-        printf("ERRO");
-        return 0;
-      }
-    }
-
-    double ** m_reslu = (double**) calloc(SL->max_iter+1, sizeof(double*));
-    if (!(m_reslu)){
-      free(SL);
-      printf("ERRO");
-      return 0;
-    }
-    for(int i = 0; i < SL->max_iter+1; i++)
-    { 
-      m_reslu[i] = (double*) calloc(SL->num_v, sizeof(double));
-      if (!(m_reslu[i])){
-        free(SL);
-        printf("ERRO");
-        return 0;
-      }
-    }
-
-    double ** m_resgs = (double**) calloc(SL->max_iter+1, sizeof(double*));
-    if (!(m_resgs)){
-      free(SL);
-      printf("ERRO");
-      return 0;
-    }
-    for(int i = 0; i < SL->max_iter+1; i++)
-    { 
-      m_resgs[i] = (double*) calloc(SL->num_v, sizeof(double));
-      if (!(m_resgs[i])){
-        free(SL);
-        printf("ERRO");
-        return 0;
-      }
-    }
+    void * f_aux;
+    double ** m_reseg;
+    double ** m_reslu;
+    double ** m_resgs;
 
     cria_hes(SL);
 
@@ -160,7 +114,6 @@ int main (){
       else
         printf("\t\t\t| ");
 
-      
       if (final[1] != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
         if (isnan(final[1]) || isinf(final[1]))
           printf("\t\t\t| ");
@@ -170,8 +123,6 @@ int main (){
       else
         printf("\t\t\t| ");
 
-
-      
       if (final[2] != NAN) {  // se nesta iteração o valor da primeira coluna existe, imprime
         if (isnan(final[2]) || isinf(final[2]))
           printf("\t\t\t ");
@@ -188,10 +139,21 @@ int main (){
     printf("Tempo derivadas | %1.14e\t| %1.14e\t| %1.14e\n", TderivadasEG, TderivadasLU, TderivadasGS);
     printf("Tempo SL \t| %1.14e\t| %1.14e\t| %1.14e\n", TslEG, TslLU, TslGS);
     printf("#\n");
-    
-    ++i;
     printf("\n");
+    
+    for (int i = 0; i < SL->num_v; i++)
+      free(X[i]);
+    
+    for(int i = 0; i < SL->max_iter+1; i++)
+    { 
+      free(m_reseg[i]);
+      free(m_reslu[i]);
+      free(m_resgs[i]);
+    }
+    free(m_reseg);
+    free(m_reslu);
+    free(m_resgs);
     liberaSistLinear(SL);
+    evaluator_destroy(f_aux);
   }
-  evaluator_destroy(f_aux);
 }
