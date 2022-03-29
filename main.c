@@ -191,7 +191,7 @@ int main (){
     
     ++i;
     printf("\n");
+    liberaSistLinear(SL);
   }
-  liberaSistLinear(SL);
   evaluator_destroy(f_aux);
 }
