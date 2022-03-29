@@ -287,6 +287,7 @@ void liberaSistLinear(SistLinear_t *SL) {
   for (int i = 0; i < SL->num_v; i++)
     for (int z = 0; z < SL->num_v; z++)
       evaluator_destroy(SL->HESSIANA[i][z]);
+  evaluator_destroy(SL->HESSIANA);
   for (int i = 0; i < SL->num_v; i++)
     evaluator_destroy(SL->GRADIENTE[i]);
   free(SL->eq_aux);
