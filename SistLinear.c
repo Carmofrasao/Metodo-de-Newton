@@ -183,14 +183,14 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
   if (SL) {
     SL->num_v = n;
 
-    SL->GRADIENTE = (void**) malloc(n * sizeof(void*));
+    SL->GRADIENTE = (void**) calloc(n, sizeof(void*));
     if (!(SL->GRADIENTE)) {
       free(SL);
       printf("ERRO");
       return NULL;
     }
 
-    SL->HESSIANA = (void***) malloc(n * sizeof(void**));
+    SL->HESSIANA = (void***) calloc(n, sizeof(void**));
     if (!(SL->HESSIANA)) {
       free(SL);
       printf("ERRO");
@@ -198,7 +198,7 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
     }
     for (int i = 0; i < n; i++)
     {
-      SL->HESSIANA[i] = (void**) malloc(n * sizeof(void*));
+      SL->HESSIANA[i] = (void**) calloc(n, sizeof(void*));
       if (!(SL->HESSIANA[i])) {
         free(SL);
         printf("ERRO");

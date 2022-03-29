@@ -116,11 +116,11 @@ double ** Newton_Modificado(SistLinear_t *SL, double *TderivadasLU, double *TslL
   for(int z = 0; z < SL->num_v; z++)
     m_res[0][z] = SL->Xlu[z];
 
-  double ** m_aux;
-
-  for (int i = 0; i < SL->max_iter; i++)
+  int i;
+  for (i = 0; i < SL->max_iter; i++)
   {
     double aux = 0.0;
+    double ** m_aux;
 
     double * grad = calc_grad(SL, SL->Xlu, TderivadasLU);
 
@@ -179,10 +179,13 @@ double ** Newton_Modificado(SistLinear_t *SL, double *TderivadasLU, double *TslL
           m_res[l+1][z] = NAN;
       return m_res;
     }
+    if((i+1 % SL->num_v == 0) || (i+1 >= SL->max_iter))
+    {
+      for (int i = 0; i < SL->num_v; i++)
+        free(m_aux[i]);
+      free(m_aux);
+    }
     free(grad);
   }
-  for (int i = 0; i < SL->num_v; i++)
-    free(m_aux[i]);
-  free(m_aux);
   return m_res;
 }
