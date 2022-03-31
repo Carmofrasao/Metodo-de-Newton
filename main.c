@@ -31,6 +31,22 @@ int main (){
   
   while (SL = lerSistLinear())
   {
+    double ** m_aux = (double**)calloc(SL->num_v, sizeof(double*));
+    if (!(m_aux)) {
+      free(SL);
+      printf("ERRO");
+      return 0;
+    }
+    for(int i = 0; i < SL->num_v; i++)
+    {
+      m_aux[i] = (double*)calloc(SL->num_v, sizeof(double));
+      if (!(m_aux[i])) {
+        free(SL);
+        printf("ERRO");
+        return 0;
+      }
+    }
+
     void * f_aux;
     double ** m_reseg;
     double ** m_reslu;
@@ -45,7 +61,7 @@ int main (){
     //Newton Padrão
 
     double tTotal = timestamp();
-    m_reseg = Newton_Padrao(SL, &TderivadasEG, &TslEG);
+    m_reseg = Newton_Padrao(SL, &TderivadasEG, &TslEG, m_aux);
     TtotalEG = timestamp() - tTotal;
     
     
@@ -54,7 +70,7 @@ int main (){
     //Metodo de Newton Modificado
 
     tTotal = timestamp();
-    m_reslu = Newton_Modificado(SL, &TderivadasLU, &TslLU);
+    m_reslu = Newton_Modificado(SL, &TderivadasLU, &TslLU, m_aux);
     TtotalLU = timestamp() - tTotal;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,7 +78,7 @@ int main (){
     //Metodo de Newton Inexato
 
     tTotal = timestamp();
-    m_resgs = Newton_Inexato(SL, &TderivadasGS, &TslGS);
+    m_resgs = Newton_Inexato(SL, &TderivadasGS, &TslGS, m_aux);
     TtotalGS = timestamp() - tTotal;
   
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,6 +169,9 @@ int main (){
     free(m_reseg);
     free(m_reslu);
     free(m_resgs);
+    for (int i = 0; i < SL->num_v; i++)
+      free(m_aux[i]);
+    free(m_aux);
     liberaSistLinear(SL);
     evaluator_destroy(f_aux);
   }

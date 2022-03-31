@@ -30,7 +30,7 @@ void clean_fgets(char *pos);
 
 double * calc_grad(SistLinear_t *SL, double * X, double *tempo);
 
-double ** calc_hes(SistLinear_t *SL, double * X, double *tempo);
+void calc_hes(SistLinear_t *SL, double * X, double *tempo, double ** m_aux);
 
 SistLinear_t *alocaSistLinear(unsigned int n);
 

@@ -3,7 +3,7 @@
 
 #include "SistLinear.h"
 
-double ** Newton_Inexato(SistLinear_t *SL, double *TderivadasGS, double * TlsGS);
+double ** Newton_Inexato(SistLinear_t *SL, double *TderivadasGS, double * TlsGS, double ** m_aux);
 
 double * calcula_independentes(SistLinear_t *SL, double **m_aux, double *grad, double * res);
 

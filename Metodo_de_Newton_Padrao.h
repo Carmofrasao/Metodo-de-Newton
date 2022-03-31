@@ -11,6 +11,6 @@ void triang(SistLinear_t *SL, double**hes, double * grad);
 
 double* eliminacaoGauss(SistLinear_t *SL, double *delta, double**hes, double * grad) ;
 
-double ** Newton_Padrao(SistLinear_t *SL, double *TderivadasEG, double *TslEG);
+double ** Newton_Padrao(SistLinear_t *SL, double *TderivadasEG, double *TslEG, double ** m_aux);
 
 #endif

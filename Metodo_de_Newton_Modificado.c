@@ -96,7 +96,7 @@ double * FatLU(SistLinear_t *SL, double *delta, double**hes, double * grad) {
   return delta;
 }
 
-double ** Newton_Modificado(SistLinear_t *SL, double *TderivadasLU, double *TslLU)
+double ** Newton_Modificado(SistLinear_t *SL, double *TderivadasLU, double *TslLU, double ** m_aux)
 {
   double ** m_res = (double**) calloc(SL->max_iter+1, sizeof(double*));
   if (!(m_res)){
@@ -120,12 +120,11 @@ double ** Newton_Modificado(SistLinear_t *SL, double *TderivadasLU, double *TslL
   for (i = 0; i < SL->max_iter; i++)
   {
     double aux = 0.0;
-    double ** m_aux;
 
     double * grad = calc_grad(SL, SL->Xlu, TderivadasLU);
 
     if(i % SL->num_v == 0)
-      m_aux = calc_hes(SL, SL->Xlu, TderivadasLU);
+      calc_hes(SL, SL->Xlu, TderivadasLU, m_aux);
   
     for (int i = 0; i < SL->num_v; i++)
       aux += grad[i]*grad[i];
@@ -134,9 +133,6 @@ double ** Newton_Modificado(SistLinear_t *SL, double *TderivadasLU, double *TslL
     if(aux < SL->epsilon)
     {
       free(grad);
-      for (int i = 0; i < SL->num_v; i++)
-        free(m_aux[i]);
-      free(m_aux);
       for (int l = i+1; l < SL->max_iter+1; l++)
         for(int z = 0; z < SL->num_v; z++)
           m_res[l][z] = NAN;
@@ -171,19 +167,10 @@ double ** Newton_Modificado(SistLinear_t *SL, double *TderivadasLU, double *TslL
     if(aux < SL->epsilon)
     {
       free(grad);
-      for (int i = 0; i < SL->num_v; i++)
-        free(m_aux[i]);
-      free(m_aux);
       for (int l = i+1; l < SL->max_iter; l++)
         for(int z = 0; z < SL->num_v; z++)
           m_res[l+1][z] = NAN;
       return m_res;
-    }
-    if((i+1 % SL->num_v == 0) || (i+1 >= SL->max_iter))
-    {
-      for (int i = 0; i < SL->num_v; i++)
-        free(m_aux[i]);
-      free(m_aux);
     }
     free(grad);
   }

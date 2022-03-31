@@ -117,30 +117,15 @@ double * calc_grad(SistLinear_t *SL, double * X, double *tempo)
   return res;
 }
 
-double ** calc_hes(SistLinear_t *SL, double * X, double *tempo)
+void calc_hes(SistLinear_t *SL, double * X, double *tempo, double ** m_aux)
 {
-  double ** m_aux = (double**)calloc(SL->num_v, sizeof(double*));
-  if (!(m_aux)) {
-    free(SL);
-    printf("ERRO");
-    return 0;
-  }
-  for(int i = 0; i < SL->num_v; i++)
-  {
-    m_aux[i] = (double*)calloc(SL->num_v, sizeof(double));
-    if (!(m_aux[i])) {
-      free(SL);
-      printf("ERRO");
-      return 0;
-    }
-  }
   char aux[4];
   
   char **Xs = (char**) calloc(SL->num_v, sizeof(char*));
   if (!(Xs)) {
     free(SL);
     printf("ERRO");
-    return 0;
+    return;
   }
   for(int l = 0; l < SL->num_v; l++)
   {
@@ -148,7 +133,7 @@ double ** calc_hes(SistLinear_t *SL, double * X, double *tempo)
     if (!(Xs[l])) {
       free(SL);
       printf("ERRO");
-      return 0;
+      return;
     }
   }
 
@@ -173,7 +158,7 @@ double ** calc_hes(SistLinear_t *SL, double * X, double *tempo)
     free(Xs[i]);
   }
   free(Xs);
-  return m_aux;
+  return;
 }
 
 SistLinear_t *alocaSistLinear(unsigned int n) {
