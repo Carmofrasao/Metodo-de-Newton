@@ -1,3 +1,11 @@
+/*Alunos:
+Anderson Aparecido do Carmo Frasão
+GRR 20204069
+
+Erick Eckermann Cardoso
+GRR20186075
+*/
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,27 +13,27 @@
 #include "Metodo_de_Newton_Inexato.h"
 #include "SistLinear.h"
 
+//Recebe os independentes da iteração e retorna os valores convergindo para a raiz
 double * calcula_independentes(SistLinear_t *SL, double **m_aux, double *grad, double * res)
 {
   double result = 0.0;
-  double *indep = res;
+  double *indep = res;                    //Vetor que guarda os valores x1 .. xn
 
-  for(int i = 0; i < SL->num_v; i++){
+  for(int i = 0; i < SL->num_v; i++){     //Alterna os valores x1 .. xn para cálculo dos seus resultados
     for(int j = 0; j < SL->num_v; j++)
-      result += m_aux[i][j] * indep[j];
-    
+      result += m_aux[i][j] * indep[j];   //Calcula xi, avaliando os outros termos do poinômio de acordo com indep[]
     result -= m_aux[i][i] * indep[i];
-    result = grad[i] - result;
+    result = grad[i] - result;           
     result = result / m_aux[i][i];
-    if (isnan(m_aux[i][i]))
-      printf("ERRO: %g\n", m_aux[i][i]);
-    indep[i] = result;
-    result = 0.0;
+    if (isnan(m_aux[i][i]))               //Confere se não é divisão por zero
+      printf("ERRO: %g\n", m_aux[i][i]);  
+    indep[i] = result;                    //Guarda o resulado de xi para o calculo de xi+1
+    result = 0.0; 
   }
   return indep;
 }
 
-// Gauss-Seidel 
+// Método Gauss-Seidel para resolução de sistemas lineares
 double * gaussSeidel(SistLinear_t *SL, double **m_aux, double *grad)
 {
   double *res = (double*) calloc(SL->num_v, sizeof(double));
@@ -41,6 +49,7 @@ double * gaussSeidel(SistLinear_t *SL, double **m_aux, double *grad)
   double sub = 0.0;
 
   do{
+    //Função que calcula valores de x1 .. xn da próxima iteração
     prox_res = calcula_independentes(SL, m_aux, grad, res);
     for(int j = 0; j < SL->num_v; j++){
       sub = prox_res[j] - res[j];
@@ -51,6 +60,7 @@ double * gaussSeidel(SistLinear_t *SL, double **m_aux, double *grad)
     res = prox_res;  
     
     i++;
+  //Critério de parada, vai no máximo até 50 iterações
   }while((i <= 50) && (num_maior < SL->epsilon));
 
   return res;
