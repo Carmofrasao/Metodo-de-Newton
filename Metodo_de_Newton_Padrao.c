@@ -1,3 +1,10 @@
+/* Código escrito por
+    Anderson Aparecido do Carmo Frasão 
+    GRR 20204069
+    Erick Eckermann Cardoso 
+    GRR 20186075
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -5,9 +12,12 @@
 #include "Metodo_de_Newton_Padrao.h"
 #include "SistLinear.h"
 
+//função para aplicar o pivoteamento na matriz hessiana
 void pivot(SistLinear_t *SL, double**hes, double * grad, int i) {
   double max = fabs(hes[i][i]);
   int max_i = i;
+
+  //verifica qual posição tem o maior valor na coluna i, linha j (i+1)
   for (int j = i+1; j < SL->num_v; ++j) {
     double v = fabs(hes[j][i]);
     if (v > max) {
@@ -15,6 +25,8 @@ void pivot(SistLinear_t *SL, double**hes, double * grad, int i) {
       max_i = j;
     }
   }
+
+  //pivoteamento
   if (max_i != i) {
     double *tmp = hes[i];
     hes[i] = hes[max_i];
@@ -26,6 +38,7 @@ void pivot(SistLinear_t *SL, double**hes, double * grad, int i) {
   }
 } 
 
+//função para calcular o delta
 void retrossubs(SistLinear_t *SL, double *delta, double**hes, double * grad) {
   for (int i = SL->num_v-1; i >=0; --i) {
     delta[i] = grad[i];
@@ -35,6 +48,7 @@ void retrossubs(SistLinear_t *SL, double *delta, double**hes, double * grad) {
   }
 }
 
+//função para triangularizar a matriz hessiana
 void triang(SistLinear_t *SL, double**hes, double * grad) {
   for (int i = 0; i < SL->num_v; ++i) {
 
@@ -53,12 +67,15 @@ void triang(SistLinear_t *SL, double**hes, double * grad) {
   }
 }
 
+//função com a chamada para o procedimento eliminação de gauss
 double* eliminacaoGauss(SistLinear_t *SL, double *delta, double**hes, double * grad) {
     triang(SL, hes, grad);
     retrossubs(SL, delta, hes, grad);
     return delta;
 }
 
+
+//função principal para o metodo newton padrão 
 double ** Newton_Padrao(SistLinear_t *SL, double *TderivadasEG, double *TslEG, double ** m_aux)
 {
   double ** m_res = (double**) calloc(SL->max_iter+1, sizeof(double*));
@@ -77,12 +94,15 @@ double ** Newton_Padrao(SistLinear_t *SL, double *TderivadasEG, double *TslEG, d
     }
   }
 
+  //iteração zero
   for(int z = 0; z < SL->num_v; z++)
     m_res[0][z] = SL->Xeg[z];
 
+  //for principal
   for (int i = 0; i < SL->max_iter; i++)
   {
     double aux = 0.0;
+    //atualiza o gradiente e a hessiana
     double * grad = calc_grad(SL, SL->Xeg, TderivadasEG);
     calc_hes(SL, SL->Xeg, TderivadasEG, m_aux);
   
@@ -90,6 +110,7 @@ double ** Newton_Padrao(SistLinear_t *SL, double *TderivadasEG, double *TslEG, d
       aux += grad[i]*grad[i];
     aux = sqrt(aux);
 
+    //verifica se o gradiente é menor que epsolon
     if(aux < SL->epsilon)
     {
       free(grad);
@@ -98,7 +119,7 @@ double ** Newton_Padrao(SistLinear_t *SL, double *TderivadasEG, double *TslEG, d
           m_res[l][z] = NAN;
       return m_res;
     }
-    
+
     double * delta = (double*) calloc(SL->num_v, sizeof(double));
     if (!(delta)){
       free(SL);
@@ -106,6 +127,7 @@ double ** Newton_Padrao(SistLinear_t *SL, double *TderivadasEG, double *TslEG, d
       return NULL;
     }
 
+    //calcula o vetor delta e o tempo de execução do calculo
     double tTotal = timestamp();
     delta = eliminacaoGauss(SL, delta, m_aux, grad);
     *TslEG += timestamp() - tTotal;
@@ -119,12 +141,13 @@ double ** Newton_Padrao(SistLinear_t *SL, double *TderivadasEG, double *TslEG, d
       aux += delta[i]*delta[i];
     aux = sqrt(aux);
 
+    //iteração i+1
     for(int z = 0; z < SL->num_v; z++)
       m_res[i+1][z] = SL->Xeg[z];
 
-    
     free(delta);
 
+    //verifica se delta é menor que epsolon
     if(aux < SL->epsilon)
     {
       free(grad);

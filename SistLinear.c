@@ -1,3 +1,10 @@
+/* Código escrito por
+    Anderson Aparecido do Carmo Frasão 
+    GRR 20204069
+    Erick Eckermann Cardoso 
+    GRR 20186075
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -8,31 +15,31 @@
 #include "utils.h"
 #include "SistLinear.h"
 
-//criando matriz hessiana
+//criando matriz hessiana a partir da função original
 void cria_hes(SistLinear_t *SL)
 {
   char aux[4];
   char Xn[4];
 
-  clean_fgets(SL->eq_aux);
+  strtok(SL->eq_aux, "\n");
   for(int n = 0; n < SL->num_v; n++)
   {
     for(int l = 0; l < SL->num_v; l++)
     {
       void * f_aux1;
       void * f_aux2;
-      memset(Xn, 0, sizeof(Xn));
-      memset(aux, 0, sizeof(aux));
-      f_aux1 = evaluator_create(SL->eq_aux);
+      memset(Xn, 0, sizeof(Xn));              
+      memset(aux, 0, sizeof(aux));            
+      f_aux1 = evaluator_create(SL->eq_aux); 
       assert(f_aux1);
-      sprintf(aux, "%d", n+1);
-      strcat(strcpy(Xn, "x"), aux); 
+      sprintf(aux, "%d", n+1);                //gerando a variave que sera usada na derivada
+      strcat(strcpy(Xn, "x"), aux);           //
       f_aux2 = evaluator_derivative (f_aux1, Xn);
       assert(f_aux2);
       memset(Xn, 0, sizeof(Xn));
       memset(aux, 0, sizeof(aux));
-      sprintf(aux, "%d", l+1);
-      strcat(strcpy(Xn, "x"), aux); 
+      sprintf(aux, "%d", l+1);                //gerando a variave que sera usada na derivada
+      strcat(strcpy(Xn, "x"), aux);           //
       SL->HESSIANA[n][l] = evaluator_derivative (f_aux2, Xn);
       assert(SL->HESSIANA[n][l]);
       evaluator_destroy(f_aux1);
@@ -41,7 +48,7 @@ void cria_hes(SistLinear_t *SL)
   }
 }
 
-//criando vetor gradiente
+//criando vetor gradiente a partir da função original
 void cria_grad(SistLinear_t *SL)
 {
   char aux[4];
@@ -54,19 +61,15 @@ void cria_grad(SistLinear_t *SL)
     memset(aux, 0, sizeof(aux));
     f_aux = evaluator_create(SL->eq_aux);
     assert(f_aux);
-    sprintf(aux, "%d", l+1);
-    strcat(strcpy(Xn, "x"), aux); 
+    sprintf(aux, "%d", l+1);        //gerando a variave que sera usada na derivada
+    strcat(strcpy(Xn, "x"), aux);   //
     SL->GRADIENTE[l] = evaluator_derivative (f_aux, Xn);
     assert(SL->GRADIENTE[l]);
     evaluator_destroy(f_aux);
   }
 }
 
-//função para "limpar" string
-void clean_fgets(char *pos) { 
-  strtok(pos, "\n");
-}
-
+//calcula o vetor gradiente 
 double * calc_grad(SistLinear_t *SL, double * X, double *tempo)
 {
   double *res = (double*)malloc(SL->num_v*sizeof(double));
@@ -98,14 +101,14 @@ double * calc_grad(SistLinear_t *SL, double * X, double *tempo)
     for(int l = 0; l < SL->num_v; l++)
     {
       memset(aux, 0, sizeof(aux));
-      sprintf(aux, "%d", l+1);
-      strcat(strcpy(Xs[l], "x"), aux);
+      sprintf(aux, "%d", l+1);          //gerando a variave que sera usada na derivada
+      strcat(strcpy(Xs[l], "x"), aux);  //
     }
     for(int l = 0; l < SL->num_v; l++)
     {
       double tTotal = timestamp();
       res[l] = -evaluator_evaluate(SL->GRADIENTE[l], SL->num_v, Xs, X);
-      *tempo += timestamp() - tTotal;
+      *tempo += timestamp() - tTotal;   //calculando o tempo da derivação
     }
   }
   for (int i = 0; i < SL->num_v; i++)
@@ -117,6 +120,7 @@ double * calc_grad(SistLinear_t *SL, double * X, double *tempo)
   return res;
 }
 
+//calculando a matriz hessiana
 void calc_hes(SistLinear_t *SL, double * X, double *tempo, double ** m_aux)
 {
   char aux[4];
@@ -140,8 +144,8 @@ void calc_hes(SistLinear_t *SL, double * X, double *tempo, double ** m_aux)
   for(int l = 0; l < SL->num_v; l++)
   {
     memset(aux, 0, sizeof(aux));
-    sprintf(aux, "%d", l+1);
-    strcat(strcpy(Xs[l], "x"), aux);
+    sprintf(aux, "%d", l+1);          //gerando a variave que sera usada na derivada
+    strcat(strcpy(Xs[l], "x"), aux);  //
   }
 
   for (int i = 0; i < SL->num_v; i++)
@@ -150,7 +154,7 @@ void calc_hes(SistLinear_t *SL, double * X, double *tempo, double ** m_aux)
     {
       double tTotal = timestamp();
       m_aux[i][l] = evaluator_evaluate(SL->HESSIANA[i][l], SL->num_v, Xs, X);
-      *tempo += timestamp() - tTotal;
+      *tempo += timestamp() - tTotal; //calculando o tempo da derivação
     }
   }
   for (int i = 0; i < SL->num_v; i++)
@@ -161,6 +165,7 @@ void calc_hes(SistLinear_t *SL, double * X, double *tempo, double ** m_aux)
   return;
 }
 
+//alocando espaço para o sistema linear
 SistLinear_t *alocaSistLinear(unsigned int n) {
 
   SistLinear_t *SL = (SistLinear_t *) malloc(sizeof(SistLinear_t));
@@ -262,6 +267,7 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
   return SL;
 }
 
+//liberando a alocação de memoria
 void liberaSistLinear(SistLinear_t *SL) {
   for(int i = 0; i < SL->num_v; i++)
     free(SL->L[i]);
@@ -287,6 +293,7 @@ void liberaSistLinear(SistLinear_t *SL) {
   free(SL);
 }
 
+//lendo o sistema linear
 SistLinear_t *lerSistLinear() {
 
   unsigned int n;

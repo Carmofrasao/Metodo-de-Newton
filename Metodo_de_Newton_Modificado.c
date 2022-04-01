@@ -1,3 +1,10 @@
+/* Código escrito por
+    Anderson Aparecido do Carmo Frasão 
+    GRR 20204069
+    Erick Eckermann Cardoso 
+    GRR 20186075
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -5,9 +12,11 @@
 #include "SistLinear.h"
 #include "Metodo_de_Newton_Modificado.h"
 
+//função para aplicar o pivoteamento na matriz hessiana
 void pivotLU(SistLinear_t *SL, int i, double**hes, double * grad) {
   double max = fabs(hes[i][i]);
   int max_i = i;
+   //verifica qual posição tem o maior valor na coluna i, linha j (i+1)
   for (int j = i+1; j < SL->num_v; ++j) {
     double v = fabs(hes[j][i]);
     if (v > max) {
@@ -15,6 +24,7 @@ void pivotLU(SistLinear_t *SL, int i, double**hes, double * grad) {
       max_i = j;
     }
   }
+  //pivoteamento
   if (max_i != i) {
     double *tmp = hes[i];
     hes[i] = hes[max_i];
@@ -26,9 +36,11 @@ void pivotLU(SistLinear_t *SL, int i, double**hes, double * grad) {
   }
 } 
 
+//função para aplicar o pivoteamento na matriz LESS com o vetor z (fatoração LU)
 void pivotz(SistLinear_t *SL, int i) {
   double max = fabs(SL->L[i][i]);
   int max_i = i;
+  //verifica qual posição tem o maior valor na coluna i, linha j (i+1)
   for (int j = i+1; j < SL->num_v; ++j) {
     double v = fabs(SL->L[j][i]);
     if (v > max) {
@@ -36,6 +48,7 @@ void pivotz(SistLinear_t *SL, int i) {
       max_i = j;
     }
   }
+  //pivoteamento
   if (max_i != i) {
     double *tmp = SL->L[i];
     SL->L[i] = SL->L[max_i];
@@ -47,6 +60,7 @@ void pivotz(SistLinear_t *SL, int i) {
   }
 }
 
+//função para calcular o vetor z
 void retrossubpz(SistLinear_t *SL, double * grad) {
   for (int i = 0; i < SL->num_v; ++i) {
     SL->z[i] = grad[i];
@@ -55,6 +69,7 @@ void retrossubpz(SistLinear_t *SL, double * grad) {
   }
 }
 
+//função para calcular o delta
 void retrossubs2(SistLinear_t *SL, double**hes, double *delta) {
   for (int i = SL->num_v-1; i >=0; --i) {
     delta[i] = SL->z[i];
@@ -66,6 +81,7 @@ void retrossubs2(SistLinear_t *SL, double**hes, double *delta) {
   }
 }
 
+//função para triangularizar a matriz hessiana
 void triangLU(SistLinear_t *SL, double**hes, double * grad) {
   for (int i = 0; i < SL->num_v; ++i) {
     pivotLU(SL, i, hes, grad);
@@ -89,6 +105,7 @@ void triangLU(SistLinear_t *SL, double**hes, double * grad) {
   }
 }
 
+//função com a chamada para o procedimento fatoração LU
 double * FatLU(SistLinear_t *SL, double *delta, double**hes, double * grad) {
   triangLU(SL, hes, grad);
   retrossubpz(SL, grad);
@@ -96,6 +113,7 @@ double * FatLU(SistLinear_t *SL, double *delta, double**hes, double * grad) {
   return delta;
 }
 
+//função principal para o metodo newton Modificado
 double ** Newton_Modificado(SistLinear_t *SL, double *TderivadasLU, double *TslLU, double ** m_aux)
 {
   double ** m_res = (double**) calloc(SL->max_iter+1, sizeof(double*));
@@ -113,16 +131,22 @@ double ** Newton_Modificado(SistLinear_t *SL, double *TderivadasLU, double *TslL
       return NULL;
     }
   }
+
+  //iteração zero
   for(int z = 0; z < SL->num_v; z++)
     m_res[0][z] = SL->Xlu[z];
 
   int i;
+
+  //for principal
   for (i = 0; i < SL->max_iter; i++)
   {
     double aux = 0.0;
 
+    //atualiza o gradiente
     double * grad = calc_grad(SL, SL->Xlu, TderivadasLU);
 
+    //atualiza a matriz hessiana a cada has steps (numero de variaveis)
     if(i % SL->num_v == 0)
       calc_hes(SL, SL->Xlu, TderivadasLU, m_aux);
   
@@ -130,6 +154,7 @@ double ** Newton_Modificado(SistLinear_t *SL, double *TderivadasLU, double *TslL
       aux += grad[i]*grad[i];
     aux = sqrt(aux);
 
+    //verifica se o gradiente é menor que epsolon
     if(aux < SL->epsilon)
     {
       free(grad);
@@ -146,6 +171,7 @@ double ** Newton_Modificado(SistLinear_t *SL, double *TderivadasLU, double *TslL
       return NULL;
     }
 
+    //calcula o vetor delta e o tempo de execução do calculo
     double tTotal = timestamp();
     delta = FatLU(SL, delta, m_aux, grad);
     *TslLU += timestamp() - tTotal;
@@ -159,11 +185,13 @@ double ** Newton_Modificado(SistLinear_t *SL, double *TderivadasLU, double *TslL
       aux += delta[i]*delta[i];
     aux = sqrt(aux);
 
+    //iteração i+1
     for(int z = 0; z < SL->num_v; z++)
       m_res[i+1][z] = SL->Xlu[z];
 
     free(delta);
 
+    //verifica se delta é menor que epsolon
     if(aux < SL->epsilon)
     {
       free(grad);

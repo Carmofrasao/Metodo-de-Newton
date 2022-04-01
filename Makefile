@@ -1,3 +1,9 @@
+# Código escrito por
+#    Anderson Aparecido do Carmo Frasão 
+#    GRR 20204069
+#    Erick Eckermann Cardoso 
+#    GRR 20186075
+
 CFLAGS = -Wall -g 
 LFLAGS = -lmatheval -lm
 

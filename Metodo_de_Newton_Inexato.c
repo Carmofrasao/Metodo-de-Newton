@@ -5,6 +5,26 @@
 #include "Metodo_de_Newton_Inexato.h"
 #include "SistLinear.h"
 
+double * calcula_independentes(SistLinear_t *SL, double **m_aux, double *grad, double * res)
+{
+  double result = 0.0;
+  double *indep = res;
+
+  for(int i = 0; i < SL->num_v; i++){
+    for(int j = 0; j < SL->num_v; j++)
+      result += m_aux[i][j] * indep[j];
+    
+    result -= m_aux[i][i] * indep[i];
+    result = grad[i] - result;
+    result = result / m_aux[i][i];
+    if (isnan(m_aux[i][i]))
+      printf("ERRO: %g\n", m_aux[i][i]);
+    indep[i] = result;
+    result = 0.0;
+  }
+  return indep;
+}
+
 // Gauss-Seidel 
 double * gaussSeidel(SistLinear_t *SL, double **m_aux, double *grad)
 {
@@ -36,26 +56,7 @@ double * gaussSeidel(SistLinear_t *SL, double **m_aux, double *grad)
   return res;
 }
 
-double * calcula_independentes(SistLinear_t *SL, double **m_aux, double *grad, double * res)
-{
-  double result = 0.0;
-  double *indep = res;
-
-  for(int i = 0; i < SL->num_v; i++){
-    for(int j = 0; j < SL->num_v; j++)
-      result += m_aux[i][j] * indep[j];
-    
-    result -= m_aux[i][i] * indep[i];
-    result = grad[i] - result;
-    result = result / m_aux[i][i];
-    if (isnan(m_aux[i][i]))
-      printf("ERRO: %g\n", m_aux[i][i]);
-    indep[i] = result;
-    result = 0.0;
-  }
-  return indep;
-}
-
+//função principal para o metodo newton Inexato
 double ** Newton_Inexato(SistLinear_t *SL, double *TderivadasGS, double * TlsGS, double ** m_aux)
 {
   double ** m_res = (double**) calloc(SL->max_iter+1, sizeof(double*));
@@ -74,12 +75,16 @@ double ** Newton_Inexato(SistLinear_t *SL, double *TderivadasGS, double * TlsGS,
     }
   }
 
+  //iteração zero
   for(int z = 0; z < SL->num_v; z++)
     m_res[0][z] = SL->Xgs[z];
 
+  //for principal
   for (int i = 0; i < SL->max_iter; i++)
   {
     double aux = 0.0;
+
+    //atualiza o vetor gradiente e a matriz hessiana
     double * grad = calc_grad(SL, SL->Xgs, TderivadasGS);
     calc_hes(SL, SL->Xgs, TderivadasGS, m_aux);
   
@@ -87,6 +92,7 @@ double ** Newton_Inexato(SistLinear_t *SL, double *TderivadasGS, double * TlsGS,
       aux += grad[i]*grad[i];
     aux = sqrt(aux);
 
+    //verifica se o gradiente é menor que epsolon
     if(aux < SL->epsilon)
     {
       free(grad);
@@ -98,6 +104,7 @@ double ** Newton_Inexato(SistLinear_t *SL, double *TderivadasGS, double * TlsGS,
     
     double * delta;
     
+    //calcula o vetor delta e o tempo de execução do calculo
     double tTotal = timestamp();
     delta = gaussSeidel(SL, m_aux, grad);
     *TlsGS += timestamp() - tTotal;
@@ -111,11 +118,13 @@ double ** Newton_Inexato(SistLinear_t *SL, double *TderivadasGS, double * TlsGS,
       aux += delta[i]*delta[i];
     aux = sqrt(aux);
 
+    //iteração i+1
     for(int z = 0; z < SL->num_v; z++)
       m_res[i+1][z] = SL->Xgs[z];
 
     free(delta);
 
+    //verifica se delta é menor que epsolon
     if(aux < SL->epsilon)
     {
       free(grad);

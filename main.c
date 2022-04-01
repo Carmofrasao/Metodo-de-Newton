@@ -1,3 +1,10 @@
+/* Código escrito por
+    Anderson Aparecido do Carmo Frasão 
+    GRR 20204069
+    Erick Eckermann Cardoso 
+    GRR 20186075
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,17 +24,15 @@ int main (){
   char aux[4];
   char Xn[4];
 
-  double TtotalEG, TtotalLU, TtotalGS, TderivadasEG, TderivadasLU, TderivadasGS, TslEG, TslLU, TslGS;
-
-  TtotalEG = 0.0;
-  TtotalLU = 0.0;
-  TtotalGS = 0.0;
-  TderivadasEG = 0.0;
-  TderivadasLU = 0.0;
-  TderivadasGS = 0.0;
-  TslEG = 0.0;
-  TslLU = 0.0;
-  TslGS = 0.0;
+  double TtotalEG = 0;
+  double TtotalLU= 0;
+  double TtotalGS = 0;
+  double TderivadasEG = 0; 
+  double TderivadasLU = 0;
+  double TderivadasGS = 0;
+  double TslEG = 0;
+  double TslLU = 0;
+  double TslGS = 0;
   
   while (SL = lerSistLinear())
   {
@@ -53,35 +58,27 @@ int main (){
     double ** m_resgs;
 
     cria_hes(SL);
-
     cria_grad(SL);
-    
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     //Newton Padrão
 
     double tTotal = timestamp();
     m_reseg = Newton_Padrao(SL, &TderivadasEG, &TslEG, m_aux);
-    TtotalEG = timestamp() - tTotal;
-    
-    
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    TtotalEG = timestamp() - tTotal;    //calculando o tempo total do newton padrao
 
     //Metodo de Newton Modificado
 
     tTotal = timestamp();
     m_reslu = Newton_Modificado(SL, &TderivadasLU, &TslLU, m_aux);
-    TtotalLU = timestamp() - tTotal;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    TtotalLU = timestamp() - tTotal;    //calculando o tempo total do newton modificado
 
     //Metodo de Newton Inexato
 
     tTotal = timestamp();
     m_resgs = Newton_Inexato(SL, &TderivadasGS, &TslGS, m_aux);
-    TtotalGS = timestamp() - tTotal;
-  
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    TtotalGS = timestamp() - tTotal;    ////calculando o tempo total do newton inexato
+
+    //inicio do processamento de impressão
 
     memset(Xn, 0, sizeof(Xn));
     memset(aux, 0, sizeof(aux));
@@ -110,9 +107,8 @@ int main (){
     double final[3];
     // para cada iteração
     for (int i = 0; i <= SL->max_iter; i++) {
-      final[0] = NAN;
-      final[1] = NAN;
-      final[2] = NAN;
+      final[0] = final[1] = final[2] = NAN;
+
       final[0] = evaluator_evaluate (f_aux, SL->num_v, X, m_reseg[i]);
       final[1] = evaluator_evaluate (f_aux, SL->num_v, X, m_reslu[i]);
       final[2] = evaluator_evaluate (f_aux, SL->num_v, X, m_resgs[i]);
