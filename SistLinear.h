@@ -15,7 +15,6 @@ typedef struct {
   unsigned int num_v;   // numero de variaveis
 
   double **L;           // matriz dos multiplicadores (LESS)
-  double **U;           // matriz dos multiplicadores (UPER)
   double *z;            // vetor z para Fatoração LU
 
   char *eq_aux;         //strings com equacao auxiliar pra montagem da matriz

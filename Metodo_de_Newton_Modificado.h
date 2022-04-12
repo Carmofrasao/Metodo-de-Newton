@@ -13,9 +13,6 @@
 //função para aplicar o pivoteamento na matriz hessiana
 void pivotLU(SistLinear_t *SL, int i, double**hes, double * grad);
 
-//função para aplicar o pivoteamento na matriz LESS com o vetor z (fatoração LU)
-void pivotz(SistLinear_t *SL, int i);
-
 //função para calcular o vetor z
 void retrossubpz(SistLinear_t *SL, double * grad);
 

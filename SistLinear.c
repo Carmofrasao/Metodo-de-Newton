@@ -218,22 +218,6 @@ SistLinear_t *alocaSistLinear(unsigned int n) {
         return NULL;
       }
     }
-    
-    SL->U = (double**) calloc(n, sizeof(double*));
-    if (!(SL->U)) {
-      free(SL);
-      printf("ERRO");
-      return NULL;
-    }
-    for (int i = 0; i < n; i++)
-    {
-      SL->U[i] = (double*) calloc(n, sizeof(double));
-      if (!(SL->U[i])) {
-        free(SL);
-        printf("ERRO");
-        return NULL;
-      }
-    }
 
     SL->z = (double*) calloc(n, sizeof(double));
     if (!(SL->z)) {
@@ -272,9 +256,6 @@ void liberaSistLinear(SistLinear_t *SL) {
   for(int i = 0; i < SL->num_v; i++)
     free(SL->L[i]);
   free(SL->L);
-  for(int i = 0; i < SL->num_v; i++)
-    free(SL->U[i]);
-  free(SL->U);
   for (int i = 0; i < SL->num_v; i++)
   {
     for (int z = 0; z < SL->num_v; z++)

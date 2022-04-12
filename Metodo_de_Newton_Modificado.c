@@ -12,7 +12,7 @@
 #include "SistLinear.h"
 #include "Metodo_de_Newton_Modificado.h"
 
-//função para aplicar o pivoteamento na matriz hessiana
+//função para aplicar o pivoteamento
 void pivotLU(SistLinear_t *SL, int i, double**hes, double * grad) {
   double max = fabs(hes[i][i]);
   int max_i = i;
@@ -33,30 +33,35 @@ void pivotLU(SistLinear_t *SL, int i, double**hes, double * grad) {
     double aux = grad[i];
     grad[i] = grad[max_i];
     grad[max_i] = aux;
-  }
-} 
 
-//função para aplicar o pivoteamento na matriz LESS com o vetor z (fatoração LU)
-void pivotz(SistLinear_t *SL, int i) {
-  double max = fabs(SL->L[i][i]);
-  int max_i = i;
-  //verifica qual posição tem o maior valor na coluna i, linha j (i+1)
-  for (int j = i+1; j < SL->num_v; ++j) {
-    double v = fabs(SL->L[j][i]);
-    if (v > max) {
-      max = v;
-      max_i = j;
-    }
-  }
-  //pivoteamento
-  if (max_i != i) {
-    double *tmp = SL->L[i];
+    tmp = SL->L[i];
     SL->L[i] = SL->L[max_i];
     SL->L[max_i] = tmp;
 
-    double aux = SL->z[i];
+    aux = SL->z[i];
     SL->z[i] = SL->z[max_i];
     SL->z[max_i] = aux;
+  }
+} 
+
+//função para triangularizar a matriz hessiana
+void triangLU(SistLinear_t *SL, double**hes, double * grad) {
+  for (int i = 0; i < SL->num_v; ++i) {
+
+    pivotLU(SL, i, hes, grad);
+    
+    SL->L[i][i] = 1;
+    
+    for (int k = i+1; k < SL->num_v; k++) {
+      double m = hes[k][i] / hes[i][i];
+      if (isnan(m))
+        printf("ERRO DE DIV POR 0 (TRIANG): %d %g\n", i, hes[i][i]);
+
+      SL->L[k][i] = m;
+
+      for (int j = i+1; j < SL->num_v; ++j)
+        hes[k][j] -= hes[i][j] * m;
+    }
   }
 }
 
@@ -77,31 +82,7 @@ void retrossubs2(SistLinear_t *SL, double**hes, double *delta) {
       delta[i] -= hes[i][j] * delta[j];
     delta[i] /= hes[i][i];
     if (isnan(hes[i][i]))
-      printf("ERRO: %g\n", hes[i][i]);
-  }
-}
-
-//função para triangularizar a matriz hessiana
-void triangLU(SistLinear_t *SL, double**hes, double * grad) {
-  for (int i = 0; i < SL->num_v; ++i) {
-    pivotLU(SL, i, hes, grad);
-    pivotz(SL, i);
-    if (i == SL->num_v-1)
-        SL->L[i][i] = 1;
-    for (int k = i+1; k < SL->num_v; ++k) {
-      double m = hes[k][i] / hes[i][i];
-      if (isnan(m))
-        printf("ERRO: %g\n", hes[i][i]);
-      SL->U[k][i] = 0.0;
-      SL->L[k][i] *= m;
-
-      if (k-1 == i)
-        SL->L[k-1][i] = 1;
-
-      for (int j = i+1; j < SL->num_v; ++j)
-        hes[k][j] -= hes[i][j] * m;
-      grad[k] -= grad[i] * m;
-    }
+      printf("ERRO DE DIV POR 0 (RETRO): %d %g\n", i, hes[i][i]);
   }
 }
 
